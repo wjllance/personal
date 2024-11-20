@@ -5,7 +5,6 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import DevTools from './components/DevTools/index';
 import About from './components/About';
-import Projects from './components/Projects';
 import Contact from './components/Contact';
 import BitcoinTrend from './components/BitcoinTrend';
 
@@ -49,7 +48,6 @@ const App: React.FC = () => {
             <MainContent>
               <Hero id="home" />
               <About id="about" />
-              <Projects id="projects" />
               <Contact id="contact" />
             </MainContent>
           } />

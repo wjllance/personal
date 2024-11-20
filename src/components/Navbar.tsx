@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Nav = styled.nav`
@@ -22,7 +22,7 @@ const Nav = styled.nav`
   }
 `;
 
-const Logo = styled(Link)`
+const Logo = styled.span`
   font-size: 1.5rem;
   font-weight: 700;
   color: #2c3e50;
@@ -31,6 +31,11 @@ const Logo = styled(Link)`
   &:hover {
     color: #3498db;
   }
+`;
+
+const LogoLink = styled(Link)`
+  display: flex;
+  align-items: center;
 `;
 
 const NavLinks = styled.div`
@@ -107,10 +112,11 @@ const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'bitcoin', 'about', 'projects', 'contact'];
+      const sections = ['home', 'bitcoin', 'about', 'contact'];
       const current = sections.find(section => {
         const element = document.getElementById(section);
         if (element) {
@@ -129,18 +135,31 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleNavClick = (sectionId: string) => {
-    setIsOpen(false);
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+  const handleNavClick = (section: string) => {
+    if (location.pathname !== '/') {
+      navigate('/');
+      // Wait for navigation to complete before scrolling
+      setTimeout(() => {
+        const element = document.getElementById(section);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      const element = document.getElementById(section);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
     }
+    setIsOpen(false);
   };
 
   return (
     <>
       <Nav>
-        <Logo to="/">Lance Wu</Logo>
+        <LogoLink to="/" onClick={() => handleNavClick('home')}>
+          <Logo>LW</Logo>
+        </LogoLink>
         <NavLinks>
           <NavLink 
             onClick={() => handleNavClick('home')}
@@ -149,22 +168,10 @@ const Navbar: React.FC = () => {
             Home
           </NavLink>
           <NavLink 
-            onClick={() => handleNavClick('bitcoin')}
-            active={activeSection === 'bitcoin'}
-          >
-            Bitcoin
-          </NavLink>
-          <NavLink 
             onClick={() => handleNavClick('about')}
             active={activeSection === 'about'}
           >
             About
-          </NavLink>
-          <NavLink 
-            onClick={() => handleNavClick('projects')}
-            active={activeSection === 'projects'}
-          >
-            Projects
           </NavLink>
           <NavLink 
             onClick={() => handleNavClick('contact')}
@@ -185,9 +192,7 @@ const Navbar: React.FC = () => {
       </Nav>
       <MobileMenu isOpen={isOpen}>
         <MobileNavLink onClick={() => handleNavClick('home')}>Home</MobileNavLink>
-        <MobileNavLink onClick={() => handleNavClick('bitcoin')}>Bitcoin</MobileNavLink>
         <MobileNavLink onClick={() => handleNavClick('about')}>About</MobileNavLink>
-        <MobileNavLink onClick={() => handleNavClick('projects')}>Projects</MobileNavLink>
         <MobileNavLink onClick={() => handleNavClick('contact')}>Contact</MobileNavLink>
         <MobileNavLink as={Link} to="/devtools">DevTools</MobileNavLink>
       </MobileMenu>

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaGithub } from 'react-icons/fa';
 
 const ProjectsSection = styled.section`
   min-height: 100vh;
@@ -14,14 +14,14 @@ const Container = styled.div`
   margin: 0 auto;
 `;
 
-const Title = styled.h2`
+const SectionTitle = styled(motion.h2)`
   font-size: 2.5rem;
   text-align: center;
   margin-bottom: 3rem;
   color: #333;
 `;
 
-const ProjectGrid = styled.div`
+const ProjectsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
@@ -62,14 +62,14 @@ const ProjectDescription = styled.p`
   line-height: 1.6;
 `;
 
-const TechStack = styled.div`
+const TagsContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 1rem;
 `;
 
-const Tech = styled.span`
+const Tag = styled.span`
   background: #e9ecef;
   padding: 0.3rem 0.8rem;
   border-radius: 15px;
@@ -77,12 +77,7 @@ const Tech = styled.span`
   color: #495057;
 `;
 
-const Links = styled.div`
-  display: flex;
-  gap: 1rem;
-`;
-
-const LinkButton = styled.a`
+const ProjectLink = styled.a`
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -100,9 +95,8 @@ interface Project {
   title: string;
   description: string;
   image: string;
-  techStack: string[];
-  githubLink: string;
-  liveLink?: string;
+  tags: string[];
+  link: string;
 }
 
 interface ProjectsProps {
@@ -112,66 +106,62 @@ interface ProjectsProps {
 const Projects: React.FC<ProjectsProps> = ({ id }) => {
   const projects: Project[] = [
     {
-      title: "Project 1",
-      description: "A full-stack web application built with React and Node.js.",
-      image: "/project1.jpg",
-      techStack: ["React", "Node.js", "MongoDB", "Express"],
-      githubLink: "https://github.com/",
-      liveLink: "https://project1.com"
+      title: 'DeFi Yield Aggregator',
+      description: 'A smart contract-based yield optimization protocol that automatically moves funds between different DeFi protocols to maximize returns. Built with Solidity and React.',
+      image: '/images/defi-project.jpg',
+      tags: ['Solidity', 'Web3.js', 'React', 'DeFi'],
+      link: 'https://github.com/yourusername/defi-project'
     },
     {
-      title: "Project 2",
-      description: "A machine learning project for image classification.",
-      image: "/project2.jpg",
-      techStack: ["Python", "TensorFlow", "OpenCV"],
-      githubLink: "https://github.com/"
+      title: 'NFT Marketplace',
+      description: 'A decentralized marketplace for trading NFTs with features like minting, auctioning, and fractional ownership. Implements ERC-721 and ERC-1155 standards.',
+      image: '/images/nft-marketplace.jpg',
+      tags: ['Ethereum', 'IPFS', 'Smart Contracts', 'NFTs'],
+      link: 'https://github.com/yourusername/nft-marketplace'
     },
     {
-      title: "Project 3",
-      description: "A mobile app built with React Native.",
-      image: "/project3.jpg",
-      techStack: ["React Native", "TypeScript", "Firebase"],
-      githubLink: "https://github.com/",
-      liveLink: "https://project3.com"
+      title: 'Cross-Chain Bridge',
+      description: 'A bridge protocol enabling asset transfers between different blockchain networks. Features atomic swaps and multi-signature security.',
+      image: '/images/bridge-project.jpg',
+      tags: ['Blockchain', 'Cross-chain', 'Solidity', 'Web3'],
+      link: 'https://github.com/yourusername/cross-chain-bridge'
     }
   ];
 
   return (
     <ProjectsSection id={id}>
       <Container>
-        <Title>My Projects</Title>
-        <ProjectGrid>
+        <SectionTitle
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          Featured Projects
+        </SectionTitle>
+        <ProjectsGrid>
           {projects.map((project, index) => (
             <ProjectCard
-              key={project.title}
+              key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              transition={{ duration: 0.5, delay: index * 0.2 }}
             >
               <ProjectImage src={project.image} alt={project.title} />
               <ProjectContent>
                 <ProjectTitle>{project.title}</ProjectTitle>
                 <ProjectDescription>{project.description}</ProjectDescription>
-                <TechStack>
-                  {project.techStack.map(tech => (
-                    <Tech key={tech}>{tech}</Tech>
+                <TagsContainer>
+                  {project.tags.map((tag, tagIndex) => (
+                    <Tag key={tagIndex}>{tag}</Tag>
                   ))}
-                </TechStack>
-                <Links>
-                  <LinkButton href={project.githubLink} target="_blank" rel="noopener noreferrer">
-                    <FaGithub /> Code
-                  </LinkButton>
-                  {project.liveLink && (
-                    <LinkButton href={project.liveLink} target="_blank" rel="noopener noreferrer">
-                      <FaExternalLinkAlt /> Live Demo
-                    </LinkButton>
-                  )}
-                </Links>
+                </TagsContainer>
+                <ProjectLink href={project.link} target="_blank" rel="noopener noreferrer">
+                  View Project <FaGithub />
+                </ProjectLink>
               </ProjectContent>
             </ProjectCard>
           ))}
-        </ProjectGrid>
+        </ProjectsGrid>
       </Container>
     </ProjectsSection>
   );

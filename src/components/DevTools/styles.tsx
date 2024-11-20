@@ -5,41 +5,61 @@ export const DevToolsSection = styled.section`
   min-height: 100vh;
   padding: 100px 20px;
   background: #f8f9fa;
-  margin-top: 80px;
 `;
 
 export const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
 `;
 
-export const Title = styled.h2`
-  text-align: center;
+export const Header = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+  padding: 0 20px;
+`;
+
+export const BackButton = styled.button`
+  padding: 8px 16px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #2980b9;
+  }
+`;
+
+export const Title = styled.h1`
+  margin: 0;
+  font-size: 2rem;
   color: #2c3e50;
-  margin-bottom: 50px;
-  font-size: 2.5rem;
 `;
 
 export const ToolsContainer = styled.div`
   display: flex;
   gap: 30px;
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-  min-height: 600px; /* Set minimum height for the container */
+  min-height: 600px;
 `;
 
 export const TabList = styled.div`
   display: flex;
   flex-direction: column;
   min-width: 200px;
-  height: 600px; /* Fixed height for tabs */
   background: white;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  overflow-y: auto; /* Add scroll if there are many tabs */
+  overflow-y: auto;
 
-  /* Customize scrollbar */
   &::-webkit-scrollbar {
     width: 8px;
   }
@@ -50,42 +70,36 @@ export const TabList = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
+    background: #888;
     border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: #a1a1a1;
   }
 `;
 
 export const TabButton = styled.button<{ active: boolean }>`
-  padding: 15px 20px;
+  padding: 12px 20px;
   border: none;
-  background: ${props => props.active ? '#3498db' : 'transparent'};
-  color: ${props => props.active ? 'white' : '#2c3e50'};
+  background: none;
   text-align: left;
   cursor: pointer;
+  color: ${props => props.active ? '#3498db' : '#666'};
+  background-color: ${props => props.active ? '#f8f9fa' : 'transparent'};
+  border-left: 3px solid ${props => props.active ? '#3498db' : 'transparent'};
   transition: all 0.3s ease;
-  border-left: 4px solid ${props => props.active ? '#2980b9' : 'transparent'};
-  font-weight: ${props => props.active ? '600' : '400'};
-  white-space: nowrap; /* Prevent text wrapping */
 
   &:hover {
-    background: ${props => props.active ? '#3498db' : '#f8f9fa'};
+    background-color: #f8f9fa;
+    color: #3498db;
   }
 `;
 
 export const ToolContent = styled.div`
   flex: 1;
   background: white;
-  padding: 30px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  height: 600px; /* Fixed height to match tabs */
-  overflow-y: auto; /* Add scroll for content */
+  padding: 20px;
+  overflow-y: auto;
 
-  /* Customize scrollbar */
   &::-webkit-scrollbar {
     width: 8px;
   }
@@ -96,12 +110,8 @@ export const ToolContent = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
+    background: #888;
     border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: #a1a1a1;
   }
 `;
 

@@ -69,20 +69,20 @@ const Hero: React.FC<HeroProps> = ({ id }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          Software Engineer | Tech Innovator
+          Blockchain Developer | Web3 Innovator | DeFi Enthusiast
         </Subtitle>
         <SocialLinks
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
-          <SocialLink href="https://github.com/wjllance" target="_blank" rel="noopener noreferrer">
+          <SocialLink href="https://github.com/wjllance" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
             <FaGithub />
           </SocialLink>
-          <SocialLink href="https://linkedin.com/" target="_blank" rel="noopener noreferrer">
+          <SocialLink href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
             <FaLinkedin />
           </SocialLink>
-          <SocialLink href="https://twitter.com/" target="_blank" rel="noopener noreferrer">
+          <SocialLink href="https://twitter.com/" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
             <FaTwitter />
           </SocialLink>
         </SocialLinks>
