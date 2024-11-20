@@ -12,9 +12,44 @@ import {
   ResultLabel,
   ResultValue,
   LoadingSpinner,
+  Select,
 } from '../styles';
 import UNISWAP_V3_POOL_ABI from '../abis/UniswapV3Pool.json';
 import ERC20_ABI from '../abis/ERC20.json';
+
+interface ChainConfig {
+  name: string;
+  rpcUrl: string;
+  explorerUrl: string;
+  uniswapInfoUrl: string;
+}
+
+const CHAIN_CONFIGS: { [key: string]: ChainConfig } = {
+  mainnet: {
+    name: 'Ethereum Mainnet',
+    rpcUrl: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`,
+    explorerUrl: 'https://etherscan.io',
+    uniswapInfoUrl: 'https://info.uniswap.org/#',
+  },
+  arbitrum: {
+    name: 'Arbitrum One',
+    rpcUrl: `https://arbitrum-mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`,
+    explorerUrl: 'https://arbiscan.io',
+    uniswapInfoUrl: 'https://info.uniswap.org/#/?chain=arbitrum',
+  },
+  optimism: {
+    name: 'Optimism',
+    rpcUrl: `https://optimism-mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`,
+    explorerUrl: 'https://optimistic.etherscan.io',
+    uniswapInfoUrl: 'https://info.uniswap.org/#/?chain=optimism',
+  },
+  polygon: {
+    name: 'Polygon',
+    rpcUrl: `https://polygon-mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`,
+    explorerUrl: 'https://polygonscan.com',
+    uniswapInfoUrl: 'https://info.uniswap.org/#/?chain=polygon',
+  },
+};
 
 interface PoolInfo {
   token0: {
@@ -35,6 +70,7 @@ interface PoolInfo {
 
 const UniswapPoolInfo: React.FC = () => {
   const [poolAddress, setPoolAddress] = useState('');
+  const [selectedChain, setSelectedChain] = useState('mainnet');
   const [poolInfo, setPoolInfo] = useState<PoolInfo | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -44,10 +80,8 @@ const UniswapPoolInfo: React.FC = () => {
     if (!infuraKey) {
       throw new Error('REACT_APP_INFURA_KEY is not set');
     }
-    return new ethers.JsonRpcProvider(
-      `https://mainnet.infura.io/v3/${infuraKey}`
-    );
-  }, []);
+    return new ethers.JsonRpcProvider(CHAIN_CONFIGS[selectedChain].rpcUrl);
+  }, [selectedChain]);
 
   const calculatePrice = (sqrtPriceX96: bigint, decimals0: number, decimals1: number): number => {
     try {
@@ -152,6 +186,16 @@ const UniswapPoolInfo: React.FC = () => {
   return (
     <Tool>
       <ToolTitle>Uniswap V3 Pool Info</ToolTitle>
+      <Select
+        value={selectedChain}
+        onChange={(e) => setSelectedChain(e.target.value)}
+      >
+        {Object.entries(CHAIN_CONFIGS).map(([key, config]) => (
+          <option key={key} value={key}>
+            {config.name}
+          </option>
+        ))}
+      </Select>
       <Input
         type="text"
         placeholder="Enter Uniswap V3 Pool Address"
@@ -171,7 +215,13 @@ const UniswapPoolInfo: React.FC = () => {
             <ResultRow>
               <ResultLabel>Token Pair:</ResultLabel>
               <ResultValue>
-                {poolInfo.token0.symbol}/{poolInfo.token1.symbol}
+                <a 
+                  href={`${CHAIN_CONFIGS[selectedChain].uniswapInfoUrl}/pools/${poolAddress}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {poolInfo.token0.symbol}/{poolInfo.token1.symbol}
+                </a>
               </ResultValue>
             </ResultRow>
             <ResultRow>
@@ -190,11 +240,27 @@ const UniswapPoolInfo: React.FC = () => {
             </ResultRow>
             <ResultRow>
               <ResultLabel>Token0 Address:</ResultLabel>
-              <ResultValue>{poolInfo.token0.address}</ResultValue>
+              <ResultValue>
+                <a 
+                  href={`${CHAIN_CONFIGS[selectedChain].explorerUrl}/token/${poolInfo.token0.address}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {poolInfo.token0.address}
+                </a>
+              </ResultValue>
             </ResultRow>
             <ResultRow>
               <ResultLabel>Token1 Address:</ResultLabel>
-              <ResultValue>{poolInfo.token1.address}</ResultValue>
+              <ResultValue>
+                <a 
+                  href={`${CHAIN_CONFIGS[selectedChain].explorerUrl}/token/${poolInfo.token1.address}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {poolInfo.token1.address}
+                </a>
+              </ResultValue>
             </ResultRow>
           </ResultTable>
         </Result>
