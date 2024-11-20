@@ -59,6 +59,7 @@ const MainContent = styled.main`
   flex-direction: column;
   position: relative;
   z-index: 1;
+  overflow-x: hidden;
 
   &::before {
     content: '';
@@ -77,10 +78,18 @@ const Section = styled.section`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 80px 20px;
+  padding: 100px 20px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
 
   @media (max-width: 768px) {
-    padding: 60px 20px;
+    padding: 80px 16px;
+    min-height: auto;
+  }
+
+  @media (max-width: 480px) {
+    padding: 60px 16px;
   }
 `;
 

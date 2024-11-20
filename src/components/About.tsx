@@ -11,6 +11,10 @@ const AboutContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+
+  @media (max-width: 968px) {
+    padding: 0;
+  }
 `;
 
 const Content = styled.div`
@@ -23,12 +27,21 @@ const Content = styled.div`
     grid-template-columns: 1fr;
     gap: 40px;
   }
+
+  @media (max-width: 480px) {
+    gap: 32px;
+  }
 `;
 
 const AboutText = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
+
+  @media (max-width: 968px) {
+    text-align: center;
+    align-items: center;
+  }
 `;
 
 const Title = styled(motion.h2)`
@@ -36,8 +49,13 @@ const Title = styled(motion.h2)`
   color: #64ffda;
   margin-bottom: 20px;
 
-  @media (max-width: 768px) {
-    font-size: 2rem;
+  @media (max-width: 968px) {
+    font-size: 2.2rem;
+    margin-bottom: 16px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.8rem;
   }
 `;
 
@@ -47,8 +65,14 @@ const Description = styled(motion.p)`
   line-height: 1.8;
   margin: 0;
 
-  @media (max-width: 768px) {
+  @media (max-width: 968px) {
     font-size: 1rem;
+    max-width: 600px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.95rem;
+    line-height: 1.7;
   }
 `;
 
@@ -59,18 +83,41 @@ const SkillsContainer = styled(motion.div)`
   padding: 30px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 968px) {
+    padding: 24px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px;
+  }
 `;
 
 const SkillsTitle = styled.h3`
   font-size: 1.5rem;
   color: #64ffda;
   margin-bottom: 20px;
+
+  @media (max-width: 968px) {
+    text-align: center;
+    font-size: 1.3rem;
+  }
 `;
 
 const SkillsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 15px;
+
+  @media (max-width: 968px) {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+  }
 `;
 
 const SkillBadge = styled(motion.div)`
@@ -82,6 +129,15 @@ const SkillBadge = styled(motion.div)`
   text-align: center;
   border: 1px solid rgba(100, 255, 218, 0.2);
   transition: all 0.3s ease;
+
+  @media (max-width: 968px) {
+    padding: 8px 12px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+    padding: 8px 10px;
+  }
 
   &:hover {
     background: rgba(100, 255, 218, 0.2);

@@ -21,7 +21,12 @@ const HeroSection = styled.div`
   @media (max-width: 968px) {
     grid-template-columns: 1fr;
     text-align: center;
-    gap: 60px;
+    gap: 40px;
+    padding: 0;
+  }
+
+  @media (max-width: 480px) {
+    gap: 32px;
   }
 `;
 
@@ -29,6 +34,11 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
+
+  @media (max-width: 968px) {
+    align-items: center;
+    order: 2;
+  }
 `;
 
 const Title = styled(motion.h1)`
@@ -36,9 +46,14 @@ const Title = styled(motion.h1)`
   font-weight: 700;
   color: #64ffda;
   margin: 0;
+  line-height: 1.2;
 
-  @media (max-width: 768px) {
-    font-size: 2.5rem;
+  @media (max-width: 968px) {
+    font-size: 2.8rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2.2rem;
   }
 `;
 
@@ -49,8 +64,12 @@ const Subtitle = styled(motion.h2)`
   margin: 0;
   line-height: 1.5;
 
-  @media (max-width: 768px) {
-    font-size: 1.25rem;
+  @media (max-width: 968px) {
+    font-size: 1.3rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.1rem;
   }
 `;
 
@@ -61,8 +80,13 @@ const Description = styled(motion.p)`
   margin: 0 auto;
   line-height: 1.6;
 
-  @media (max-width: 768px) {
+  @media (max-width: 968px) {
     font-size: 1rem;
+    max-width: 100%;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.95rem;
   }
 `;
 
@@ -80,6 +104,10 @@ const SocialLink = styled.a`
   color: #64ffda;
   font-size: 1.5rem;
   transition: all 0.3s ease;
+
+  @media (max-width: 480px) {
+    font-size: 1.3rem;
+  }
 
   &:hover {
     color: #ffffff;
@@ -99,6 +127,12 @@ const ChartContainer = styled(motion.div)`
 
   @media (max-width: 968px) {
     height: 300px;
+    order: 1;
+  }
+
+  @media (max-width: 480px) {
+    height: 250px;
+    padding: 16px;
   }
 `;
 
