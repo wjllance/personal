@@ -47,106 +47,157 @@ const Container = styled.div`
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border-radius: 20px;
-  padding: 24px;
+  padding: 32px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-
-  @media (max-width: 768px) {
-    padding: 16px;
-  }
-`;
-
-const ChartContainer = styled(motion.div)`
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  height: 100%;
-  min-height: 400px;
 
   @media (max-width: 968px) {
     padding: 24px;
-    min-height: 350px;
   }
 
   @media (max-width: 480px) {
     padding: 20px;
-    min-height: 300px;
   }
 `;
 
 const ChartHeader = styled.div`
   display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 32px;
+
+  @media (max-width: 968px) {
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+`;
+
+const HeaderTop = styled.div`
+  display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
 
   @media (max-width: 968px) {
     flex-direction: column;
-    gap: 16px;
-    margin-bottom: 24px;
+    gap: 20px;
   }
 `;
 
 const TitleContainer = styled.div`
   display: flex;
   align-items: center;
+  gap: 16px;
+
+  @media (max-width: 968px) {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+`;
+
+const TitleGroup = styled.div`
+  display: flex;
+  align-items: center;
   gap: 12px;
 
   @media (max-width: 968px) {
-    justify-content: center;
-    width: 100%;
+    flex-direction: column;
+    gap: 8px;
   }
 `;
 
 const BitcoinLogo = styled.img`
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
+  filter: drop-shadow(0 0 8px rgba(247, 147, 26, 0.3));
+  animation: pulse 2s infinite ease-in-out;
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
 
   @media (max-width: 480px) {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
   }
 `;
 
 const Title = styled.h2`
-  font-size: 1.8rem;
+  font-size: 2rem;
   color: #64ffda;
   margin: 0;
+  white-space: nowrap;
 
   @media (max-width: 968px) {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
   }
 
   @media (max-width: 480px) {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
+  }
+`;
+
+const PriceDisplay = styled(motion.div)`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  @media (max-width: 968px) {
+    align-items: center;
+    padding: 10px 16px;
+  }
+`;
+
+const CurrentPrice = styled.div`
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.02em;
+  line-height: 1;
+
+  @media (max-width: 968px) {
+    font-size: 2.2rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2rem;
   }
 `;
 
 const PriceChange = styled.span<{ isPositive: boolean }>`
   color: ${props => props.isPositive ? '#00ff9d' : '#ff6b6b'};
-  font-size: 1rem;
-  margin-left: 8px;
+  font-size: 1.1rem;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 
   @media (max-width: 480px) {
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 `;
 
 const TimeframeContainer = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  flex-wrap: wrap;
 
   @media (max-width: 968px) {
-    width: 100%;
     justify-content: center;
-  }
-
-  @media (max-width: 480px) {
-    gap: 8px;
+    gap: 10px;
   }
 `;
 
@@ -154,30 +205,47 @@ const TimeframeButton = styled.button<{ active: boolean }>`
   background: ${props => props.active ? 'rgba(100, 255, 218, 0.2)' : 'rgba(255, 255, 255, 0.05)'};
   color: ${props => props.active ? '#ffffff' : '#64ffda'};
   border: 1px solid rgba(100, 255, 218, 0.2);
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  min-width: 80px;
 
   @media (max-width: 480px) {
-    padding: 6px 12px;
-    font-size: 0.85rem;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    min-width: 70px;
   }
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: rgba(100, 255, 218, 0.2);
     transform: translateY(-2px);
   }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;
 
-const ChartContent = styled.div`
+const ChartContainer = styled(motion.div)`
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  height: 400px;
   position: relative;
-  width: 100%;
-  height: calc(100% - 80px);
 
   @media (max-width: 968px) {
-    height: calc(100% - 100px);
+    padding: 20px;
+    height: 350px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 16px;
+    height: 300px;
   }
 `;
 
@@ -188,17 +256,35 @@ const LoadingOverlay = styled(motion.div)`
   right: 0;
   bottom: 0;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: rgba(10, 25, 47, 0.8);
+  gap: 16px;
+  background: rgba(10, 25, 47, 0.9);
   backdrop-filter: blur(4px);
   border-radius: 16px;
+  z-index: 10;
+`;
+
+const LoadingSpinner = styled(motion.div)`
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(100, 255, 218, 0.1);
+  border-top: 3px solid #64ffda;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 `;
 
 const LoadingText = styled.p`
   color: #64ffda;
   font-size: 1.1rem;
   margin: 0;
+  text-align: center;
 
   @media (max-width: 480px) {
     font-size: 1rem;
@@ -208,33 +294,23 @@ const LoadingText = styled.p`
 const ErrorMessage = styled.p`
   color: #ff6b6b;
   text-align: center;
-  font-size: 1rem;
-  margin: 0;
-
-  @media (max-width: 480px) {
-    font-size: 0.95rem;
-  }
+  font-size: 1.1rem;
+  margin: 0 0 16px 0;
 `;
 
 const RetryButton = styled(motion.button)`
   background: rgba(100, 255, 218, 0.1);
   color: #64ffda;
   border: 1px solid rgba(100, 255, 218, 0.2);
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 16px;
 
   &:hover {
     background: rgba(100, 255, 218, 0.2);
     transform: translateY(-2px);
-  }
-
-  @media (max-width: 480px) {
-    padding: 6px 12px;
-    font-size: 0.85rem;
   }
 `;
 
@@ -245,8 +321,16 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [priceChange, setPriceChange] = useState<{ value: number; percentage: number } | null>(null);
+  const [currentPrice, setCurrentPrice] = useState<number | null>(null);
+  const [abortController, setAbortController] = useState<AbortController | null>(null);
 
   const fetchPriceData = async () => {
+    if (abortController) {
+      abortController.abort();
+    }
+    const newController = new AbortController();
+    setAbortController(newController);
+
     setLoading(true);
     setError(null);
     let retries = 3;
@@ -256,7 +340,8 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
         const response = await fetch(
           `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=${
             timeframeMap[timeframe].days
-          }`
+          }`,
+          { signal: newController.signal }
         );
 
         if (!response.ok) {
@@ -265,23 +350,42 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
 
         const data: PriceData = await response.json();
         
+        // Validate data structure
+        if (!data.prices || !Array.isArray(data.prices) || data.prices.length === 0) {
+          throw new Error('Invalid price data received');
+        }
+
+        // Set current price
+        const latestPrice = data.prices[data.prices.length - 1][1];
+        if (typeof latestPrice === 'number' && !isNaN(latestPrice)) {
+          setCurrentPrice(latestPrice);
+        }
+        
         // Calculate price change
         if (data.prices.length >= 2) {
           const startPrice = data.prices[0][1];
           const endPrice = data.prices[data.prices.length - 1][1];
-          const change = endPrice - startPrice;
-          const changePercentage = (change / startPrice) * 100;
           
-          setPriceChange({
-            value: change,
-            percentage: changePercentage
-          });
+          if (typeof startPrice === 'number' && typeof endPrice === 'number' && 
+              !isNaN(startPrice) && !isNaN(endPrice) && startPrice !== 0) {
+            const change = endPrice - startPrice;
+            const changePercentage = (change / startPrice) * 100;
+            
+            setPriceChange({
+              value: change,
+              percentage: changePercentage
+            });
+          }
         }
 
         setPriceData(data);
         setLoading(false);
+        setRetryCount(0);
         return;
       } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          return;
+        }
         retries--;
         if (retries === 0) {
           setError('Failed to fetch Bitcoin price data. Please try again.');
@@ -295,21 +399,33 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
 
   useEffect(() => {
     fetchPriceData();
-  }, [timeframe]);
+    
+    // Update price every 30 seconds
+    const interval = setInterval(() => {
+      fetchPriceData();
+    }, 30000);
 
-  const handleRetry = () => {
-    setRetryCount(prev => prev + 1);
-    fetchPriceData();
-  };
+    return () => {
+      clearInterval(interval);
+      if (abortController) {
+        abortController.abort();
+      }
+    };
+  }, [timeframe]);
 
   if (error) {
     return (
       <Container id={id}>
         <ChartHeader>
-          <TitleContainer>
-            <BitcoinLogo src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1024px-Bitcoin.svg.png" alt="Bitcoin logo" />
-            <Title>BTC/USD Live</Title>
-          </TitleContainer>
+          <HeaderTop>
+            <TitleGroup>
+              <BitcoinLogo 
+                src="https://upload.wikimedia.org/commons/thumb/4/46/Bitcoin.svg/1024px-Bitcoin.svg.png" 
+                alt="Bitcoin logo"
+              />
+              <Title>BTC/USD Live</Title>
+            </TitleGroup>
+          </HeaderTop>
         </ChartHeader>
         <ChartContainer
           initial={{ opacity: 0 }}
@@ -317,7 +433,7 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
           transition={{ duration: 0.3 }}
         >
           <ErrorMessage>{error}</ErrorMessage>
-          <RetryButton onClick={handleRetry}>
+          <RetryButton onClick={() => fetchPriceData()}>
             Retry
           </RetryButton>
         </ChartContainer>
@@ -329,17 +445,29 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
     return (
       <Container id={id}>
         <ChartHeader>
-          <TitleContainer>
-            <BitcoinLogo src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1024px-Bitcoin.svg.png" alt="Bitcoin logo" />
-            <Title>
-              BTC/USD Live
+          <HeaderTop>
+            <TitleGroup>
+              <BitcoinLogo 
+                src="https://upload.wikimedia.org/commons/thumb/4/46/Bitcoin.svg/1024px-Bitcoin.svg.png" 
+                alt="Bitcoin logo"
+              />
+              <Title>BTC/USD Live</Title>
+            </TitleGroup>
+            <PriceDisplay
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <CurrentPrice>
+                $0.00
+              </CurrentPrice>
               {priceChange && (
                 <PriceChange isPositive={priceChange.value >= 0}>
-                  {priceChange.value >= 0 ? '+' : ''}{priceChange.percentage.toFixed(2)}%
+                  {priceChange.value >= 0 ? '↑' : '↓'} {Math.abs(priceChange.percentage).toFixed(2)}%
                 </PriceChange>
               )}
-            </Title>
-          </TitleContainer>
+            </PriceDisplay>
+          </HeaderTop>
           <TimeframeContainer>
             {(Object.keys(timeframeMap) as Timeframe[]).map((tf) => (
               <TimeframeButton
@@ -358,8 +486,9 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
           <LoadingOverlay
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
           >
+            <LoadingSpinner />
             <LoadingText>Loading Bitcoin price data...</LoadingText>
           </LoadingOverlay>
         </ChartContainer>
@@ -391,18 +520,18 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
   };
 
   const chartData = {
-    labels: priceData.prices.map(([timestamp]) => formatDate(timestamp)),
+    labels: priceData?.prices.map(([timestamp]) => formatDate(timestamp)) ?? [],
     datasets: [
       {
         label: 'Bitcoin Price (USD)',
-        data: priceData.prices.map(([, price]) => price),
+        data: priceData?.prices.map(([, price]) => price) ?? [],
         borderColor: 'rgba(255, 255, 255, 0.8)',
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
         pointBackgroundColor: 'rgba(255, 255, 255, 0.8)',
         pointBorderColor: 'rgba(255, 255, 255, 0.8)',
-        pointRadius: 0, // Hide all points
-        pointHitRadius: 10, // Area around the point that will trigger tooltip
-        pointHoverRadius: 4, // Size of point when hovering
+        pointRadius: 0,
+        pointHitRadius: 10,
+        pointHoverRadius: 4,
         pointHoverBackgroundColor: '#ffffff',
         pointHoverBorderColor: '#ffffff',
         fill: true,
@@ -513,17 +642,36 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
   return (
     <Container id={id}>
       <ChartHeader>
-        <TitleContainer>
-          <BitcoinLogo src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1024px-Bitcoin.svg.png" alt="Bitcoin logo" />
-          <Title>
-            BTC/USD Live
+        <HeaderTop>
+          <TitleGroup>
+            <BitcoinLogo 
+              src="https://upload.wikimedia.org/commons/thumb/4/46/Bitcoin.svg/1024px-Bitcoin.svg.png" 
+              alt="Bitcoin logo"
+            />
+            <Title>BTC/USD Live</Title>
+          </TitleGroup>
+          <PriceDisplay
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <CurrentPrice>
+              ${currentPrice?.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })}
+            </CurrentPrice>
             {priceChange && (
               <PriceChange isPositive={priceChange.value >= 0}>
-                {priceChange.value >= 0 ? '+' : ''}{priceChange.percentage.toFixed(2)}%
+                {priceChange.value >= 0 ? '↑' : '↓'}
+                {Math.abs(priceChange.percentage).toFixed(2)}%
+                <span style={{ opacity: 0.7, fontSize: '0.9em' }}>
+                  ({timeframe})
+                </span>
               </PriceChange>
             )}
-          </Title>
-        </TitleContainer>
+          </PriceDisplay>
+        </HeaderTop>
         <TimeframeContainer>
           {(Object.keys(timeframeMap) as Timeframe[]).map((tf) => (
             <TimeframeButton
@@ -538,8 +686,23 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
           ))}
         </TimeframeContainer>
       </ChartHeader>
-      <ChartContainer>
-        <Line data={chartData} options={options} />
+      <ChartContainer
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+      >
+        {loading ? (
+          <LoadingOverlay
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
+          >
+            <LoadingSpinner />
+            <LoadingText>Loading Bitcoin price data...</LoadingText>
+          </LoadingOverlay>
+        ) : (
+          <Line data={chartData} options={options} />
+        )}
       </ChartContainer>
     </Container>
   );
