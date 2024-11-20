@@ -2,85 +2,92 @@ import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
-const AboutSection = styled.section`
-  min-height: 100vh;
-  padding: 100px 20px;
-  background: #f8f9fa;
-`;
+interface AboutProps {
+  id?: string;
+}
 
-const Container = styled.div`
+const AboutContainer = styled.div`
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 20px;
 `;
 
 const Content = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: center;
+  gap: 60px;
+  align-items: start;
 
-  @media (max-width: 768px) {
+  @media (max-width: 968px) {
     grid-template-columns: 1fr;
-    text-align: center;
+    gap: 40px;
   }
 `;
 
 const AboutText = styled.div`
-  h2 {
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    color: #333;
-  }
-
-  p {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #666;
-    margin-bottom: 2rem;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 `;
 
-const AboutTitle = styled.h2`
+const Title = styled(motion.h2)`
   font-size: 2.5rem;
-  margin-bottom: 2rem;
-  color: #333;
+  color: #64ffda;
+  margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
 `;
 
-const Description = styled.p`
+const Description = styled(motion.p)`
   font-size: 1.1rem;
+  color: #8892b0;
   line-height: 1.8;
-  color: #666;
-  margin-bottom: 2rem;
+  margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
 `;
 
-const SkillsContainer = styled.div`
-  margin-top: 2rem;
+const SkillsContainer = styled(motion.div)`
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 `;
 
 const SkillsTitle = styled.h3`
   font-size: 1.5rem;
-  margin-bottom: 1rem;
-  color: #333;
+  color: #64ffda;
+  margin-bottom: 20px;
 `;
 
 const SkillsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 15px;
 `;
 
 const SkillBadge = styled(motion.div)`
-  background: #3498db;
-  color: white;
-  padding: 0.8rem;
-  border-radius: 5px;
+  background: rgba(100, 255, 218, 0.1);
+  color: #64ffda;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 0.9rem;
   text-align: center;
-  font-weight: 500;
-`;
+  border: 1px solid rgba(100, 255, 218, 0.2);
+  transition: all 0.3s ease;
 
-interface AboutProps {
-  id?: string;
-}
+  &:hover {
+    background: rgba(100, 255, 218, 0.2);
+    transform: translateY(-2px);
+  }
+`;
 
 const About: React.FC<AboutProps> = ({ id }) => {
   const skills = [
@@ -90,45 +97,61 @@ const About: React.FC<AboutProps> = ({ id }) => {
   ];
 
   return (
-    <AboutSection id={id}>
-      <Container>
-        <Content>
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+    <AboutContainer id={id}>
+      <Content>
+        <AboutText>
+          <Title
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
           >
-            <AboutText>
-              <AboutTitle>About Me</AboutTitle>
-              <Description>
-                Passionate blockchain developer with a deep understanding of decentralized technologies. 
-                I specialize in building secure and efficient smart contracts, DeFi protocols, and Web3 applications. 
-                My expertise spans across the entire blockchain development stack, from writing Solidity contracts 
-                to creating intuitive front-end experiences.
-              </Description>
-              <Description>
-                Currently focused on advancing DeFi innovation and exploring new possibilities in the Web3 space. 
-                I'm particularly interested in decentralized finance, NFT technologies, and cross-chain solutions.
-              </Description>
-            </AboutText>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
+            About Me
+          </Title>
+          <Description
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            viewport={{ once: true }}
           >
-            <SkillsContainer>
-              <SkillsTitle>Technologies & Skills</SkillsTitle>
-              <SkillsGrid>
-                {skills.map((skill, index) => (
-                  <SkillBadge key={index}>{skill}</SkillBadge>
-                ))}
-              </SkillsGrid>
-            </SkillsContainer>
-          </motion.div>
-        </Content>
-      </Container>
-    </AboutSection>
+            Passionate blockchain developer with a deep understanding of decentralized technologies. 
+            I specialize in building secure and efficient smart contracts, DeFi protocols, and Web3 applications. 
+            My expertise spans across the entire blockchain development stack, from writing Solidity contracts 
+            to creating intuitive front-end experiences.
+          </Description>
+          <Description
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            viewport={{ once: true }}
+          >
+            Currently focused on advancing DeFi innovation and exploring new possibilities in the Web3 space. 
+            I'm particularly interested in decentralized finance, NFT technologies, and cross-chain solutions.
+          </Description>
+        </AboutText>
+        <SkillsContainer
+          initial={{ opacity: 0, x: 20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          viewport={{ once: true }}
+        >
+          <SkillsTitle>Technologies & Skills</SkillsTitle>
+          <SkillsGrid>
+            {skills.map((skill, index) => (
+              <SkillBadge
+                key={skill}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                {skill}
+              </SkillBadge>
+            ))}
+          </SkillsGrid>
+        </SkillsContainer>
+      </Content>
+    </AboutContainer>
   );
 };
 
