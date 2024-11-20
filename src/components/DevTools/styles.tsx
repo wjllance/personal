@@ -161,21 +161,64 @@ export const Button = styled(motion.button)`
   }
 `;
 
-export const Result = styled.pre`
+export const Result = styled.div`
+  margin-top: 20px;
+  padding: 20px;
   background: #f8f9fa;
-  padding: 15px;
-  border-radius: 5px;
-  overflow-x: auto;
-  margin-top: 10px;
-  font-family: 'Courier New', monospace;
-  white-space: pre-wrap;
-  word-break: break-all;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
 `;
 
 export const ErrorMessage = styled.div`
-  color: #e74c3c;
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 5px;
-  background: #fde8e8;
+  padding: 12px;
+  background-color: #fee2e2;
+  color: #dc2626;
+  border-radius: 6px;
+  border: 1px solid #fecaca;
+  margin: 10px 0;
+`;
+
+export const LoadingSpinner = styled.div`
+  width: 30px;
+  height: 30px;
+  margin: 20px auto;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
+export const ResultTable = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+export const ResultRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const ResultLabel = styled.span`
+  font-weight: 500;
+  color: #4a5568;
+`;
+
+export const ResultValue = styled.span`
+  color: #2d3748;
+  word-break: break-all;
+  text-align: right;
+  max-width: 70%;
 `;
