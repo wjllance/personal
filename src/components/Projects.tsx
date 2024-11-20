@@ -4,8 +4,9 @@ import { motion } from 'framer-motion';
 import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
 
 const ProjectsSection = styled.section`
+  min-height: 100vh;
   padding: 100px 20px;
-  background: #f8f9fa;
+  background: #ffffff;
 `;
 
 const Container = styled.div`

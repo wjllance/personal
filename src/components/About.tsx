@@ -3,8 +3,9 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
 const AboutSection = styled.section`
+  min-height: 100vh;
   padding: 100px 20px;
-  background: white;
+  background: #f8f9fa;
 `;
 
 const Container = styled.div`
@@ -79,7 +80,7 @@ const About: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <ProfileImage src="/profile-placeholder.jpg" alt="Junlin Wu" />
+            <ProfileImage src="/images/Avatar.jpg" alt="Junlin Wu" />
           </motion.div>
           <TextContent>
             <motion.div

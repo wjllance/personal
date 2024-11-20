@@ -3,8 +3,9 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
 const ContactSection = styled.section`
+  min-height: 100vh;
   padding: 100px 20px;
-  background: white;
+  background: #f8f9fa;
 `;
 
 const Container = styled.div`

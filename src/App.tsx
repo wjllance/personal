@@ -1,7 +1,9 @@
 import React from 'react';
-import { createGlobalStyle } from 'styled-components';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { createGlobalStyle, styled } from 'styled-components';
 import Navbar from './components/Navbar';
-import Hero from './components/Hero';
+import Home from './pages/Home';
+import DevTools from './components/DevTools';
 import About from './components/About';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
@@ -26,16 +28,27 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+const PageWrapper = styled.div`
+  padding-top: 80px; // Account for fixed navbar
+`;
+
 function App() {
   return (
-    <>
+    <Router>
       <GlobalStyle />
       <Navbar />
-      <Hero />
-      <About />
-      <Projects />
-      <Contact />
-    </>
+      <PageWrapper>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/devtools" element={<DevTools />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/contact" element={<Contact />} />
+          {/* Redirect unknown paths to home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </PageWrapper>
+    </Router>
   );
 }
 
