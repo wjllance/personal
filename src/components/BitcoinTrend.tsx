@@ -49,15 +49,19 @@ const Container = styled.div`
   backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 32px;
+  margin-top: 80px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 
   @media (max-width: 968px) {
     padding: 24px;
+    margin-top: 72px;
   }
 
   @media (max-width: 480px) {
     padding: 20px;
+    margin-top: 68px;
+    border-radius: 16px;
   }
 `;
 

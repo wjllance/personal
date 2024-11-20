@@ -83,13 +83,14 @@ const Section = styled.section`
   max-width: 1400px;
   margin: 0 auto;
 
-  @media (max-width: 768px) {
-    padding: 80px 16px;
+  @media (max-width: 968px) {
+    padding: 100px 16px;
     min-height: auto;
   }
 
   @media (max-width: 480px) {
-    padding: 60px 16px;
+    padding: 80px 16px 40px;
+    min-height: auto;
   }
 `;
 
