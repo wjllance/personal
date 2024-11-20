@@ -64,16 +64,16 @@ const Container = styled.div`
 const ChartHeader = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  margin-bottom: 32px;
+  gap: 20px;
+  margin-bottom: 28px;
 
   @media (max-width: 968px) {
-    gap: 20px;
+    gap: 16px;
     margin-bottom: 24px;
   }
 
   @media (max-width: 480px) {
-    gap: 16px;
+    gap: 14px;
     margin-bottom: 20px;
   }
 `;
@@ -81,40 +81,38 @@ const ChartHeader = styled.div`
 const HeaderTop = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: 24px;
 
   @media (max-width: 968px) {
     flex-direction: column;
-    gap: 20px;
-  }
-`;
-
-const TitleContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-
-  @media (max-width: 968px) {
-    flex-direction: column;
-    text-align: center;
-    gap: 12px;
+    align-items: center;
+    gap: 16px;
   }
 `;
 
 const TitleGroup = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 
   @media (max-width: 968px) {
-    flex-direction: column;
-    gap: 8px;
+    padding: 6px 12px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 12px;
+    padding: 4px 8px;
   }
 `;
 
 const BitcoinLogo = styled.img`
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   filter: drop-shadow(0 0 8px rgba(247, 147, 26, 0.3));
   animation: pulse 2s infinite ease-in-out;
 
@@ -125,56 +123,64 @@ const BitcoinLogo = styled.img`
   }
 
   @media (max-width: 480px) {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
   }
 `;
 
 const Title = styled.h2`
-  font-size: 2rem;
+  font-size: 1.8rem;
   color: #64ffda;
   margin: 0;
   white-space: nowrap;
+  letter-spacing: -0.02em;
 
   @media (max-width: 968px) {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
   }
 
   @media (max-width: 480px) {
-    font-size: 1.6rem;
+    font-size: 1.4rem;
   }
 `;
 
 const PriceDisplay = styled(motion.div)`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
+  align-items: flex-end;
+  gap: 6px;
   background: rgba(255, 255, 255, 0.05);
-  padding: 12px 20px;
+  padding: 12px 16px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 200px;
 
   @media (max-width: 968px) {
     align-items: center;
-    padding: 10px 16px;
+    padding: 10px 14px;
+    min-width: 180px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 8px 12px;
+    min-width: 160px;
   }
 `;
 
 const CurrentPrice = styled.div`
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   font-weight: 700;
   color: #ffffff;
   font-family: 'JetBrains Mono', monospace;
   letter-spacing: -0.02em;
-  line-height: 1;
+  line-height: 1.1;
 
   @media (max-width: 968px) {
-    font-size: 2.2rem;
+    font-size: 2rem;
   }
 
   @media (max-width: 480px) {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
 `;
 
@@ -193,40 +199,48 @@ const PriceChange = styled.span<{ isPositive: boolean }>`
 
 const TimeframeContainer = styled.div`
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 
   @media (max-width: 968px) {
     justify-content: center;
-    gap: 10px;
+    padding: 4px 6px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 6px;
+    padding: 3px 4px;
   }
 `;
 
 const TimeframeButton = styled.button<{ active: boolean }>`
-  background: ${props => props.active ? 'rgba(100, 255, 218, 0.2)' : 'rgba(255, 255, 255, 0.05)'};
-  color: ${props => props.active ? '#ffffff' : '#64ffda'};
-  border: 1px solid rgba(100, 255, 218, 0.2);
-  padding: 10px 20px;
+  background: ${props => props.active ? 'rgba(100, 255, 218, 0.1)' : 'transparent'};
+  color: ${props => props.active ? '#64ffda' : '#ffffff'};
+  border: 1px solid ${props => props.active ? 'rgba(100, 255, 218, 0.2)' : 'rgba(255, 255, 255, 0.1)'};
+  padding: 6px 12px;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 80px;
+  transition: all 0.2s ease;
 
-  @media (max-width: 480px) {
-    padding: 8px 16px;
-    font-size: 0.9rem;
-    min-width: 70px;
-  }
-
-  &:hover:not(:disabled) {
-    background: rgba(100, 255, 218, 0.2);
-    transform: translateY(-2px);
+  &:hover {
+    background: ${props => props.active ? 'rgba(100, 255, 218, 0.15)' : 'rgba(255, 255, 255, 0.05)'};
+    transform: translateY(-1px);
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  @media (max-width: 480px) {
+    padding: 4px 10px;
+    font-size: 0.85rem;
   }
 `;
 
