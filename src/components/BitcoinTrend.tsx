@@ -13,7 +13,6 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
-// Register ChartJS components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -24,141 +23,176 @@ ChartJS.register(
   Legend
 );
 
+interface BitcoinTrendProps {
+  id?: string;
+}
+
 const Container = styled.section`
   padding: 50px 20px;
-  background: #ffffff;
-  max-width: 1200px;
-  margin: 0 auto;
+  background: linear-gradient(to right, #000046, #1CB5E0);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `;
 
 const ChartContainer = styled.div`
-  background: white;
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  margin: 20px auto;
+  width: 90%;
+  max-width: 1200px;
+  height: 500px;
 `;
 
 const ChartTitle = styled.h2`
   text-align: center;
-  color: #2c3e50;
+  color: #ffffff;
   margin-bottom: 30px;
-  font-size: 2rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 `;
 
 const LoadingText = styled.div`
   text-align: center;
   padding: 20px;
-  color: #666;
-`;
-
-const ErrorText = styled.div`
-  text-align: center;
-  padding: 20px;
-  color: #e74c3c;
+  color: #ffffff;
+  font-size: 1.2rem;
 `;
 
 interface PriceData {
   prices: [number, number][];
 }
 
-const BitcoinTrend: React.FC<{ id: string }> = ({ id }) => {
+const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
   const [priceData, setPriceData] = useState<PriceData | null>(null);
-  const [error, setError] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchBitcoinData = async () => {
+    const fetchData = async () => {
       try {
         const response = await fetch(
           'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily'
         );
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch Bitcoin price data');
-        }
-
-        const data: PriceData = await response.json();
+        const data = await response.json();
         setPriceData(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching Bitcoin data:', error);
       }
     };
 
-    fetchBitcoinData();
+    fetchData();
   }, []);
 
+  if (!priceData) {
+    return (
+      <Container id={id}>
+        <LoadingText>Loading Bitcoin price data...</LoadingText>
+      </Container>
+    );
+  }
+
+  const labels = priceData.prices.map(([timestamp]) => 
+    new Date(timestamp).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric'
+    })
+  );
+
+  const prices = priceData.prices.map(([, price]) => price);
+
   const chartData = {
-    labels: priceData?.prices.map(price => 
-      new Date(price[0]).toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric' 
-      })
-    ) || [],
+    labels,
     datasets: [
       {
         label: 'Bitcoin Price (USD)',
-        data: priceData?.prices.map(price => price[1]) || [],
-        borderColor: '#f7931a',
-        backgroundColor: 'rgba(247, 147, 26, 0.1)',
-        borderWidth: 2,
+        data: prices,
+        borderColor: '#00f2fe',
+        backgroundColor: 'rgba(0, 242, 254, 0.1)',
+        pointBackgroundColor: '#00f2fe',
+        pointBorderColor: '#ffffff',
+        pointHoverRadius: 8,
+        pointHoverBackgroundColor: '#ffffff',
+        pointHoverBorderColor: '#00f2fe',
         fill: true,
         tension: 0.4,
-      },
-    ],
+        borderWidth: 3,
+      }
+    ]
   };
 
   const options: ChartOptions<'line'> = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top' as const,
-      },
-      title: {
-        display: false,
+        labels: {
+          color: '#ffffff',
+          font: {
+            size: 14
+          }
+        }
       },
       tooltip: {
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        titleColor: '#000046',
+        bodyColor: '#000046',
+        titleFont: {
+          size: 14,
+          weight: 'bold'
+        },
+        bodyFont: {
+          size: 14
+        },
+        padding: 12,
+        displayColors: false,
         callbacks: {
           label: (context) => {
-            return `$${context.parsed.y.toLocaleString()}`;
-          },
-        },
-      },
+            return new Intl.NumberFormat('en-US', {
+              style: 'currency',
+              currency: 'USD',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0
+            }).format(context.parsed.y);
+          }
+        }
+      }
     },
     scales: {
+      x: {
+        ticks: {
+          color: '#ffffff',
+          font: {
+            size: 12
+          }
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)'
+        }
+      },
       y: {
         ticks: {
-          callback: (value) => {
-            return `$${value.toLocaleString()}`;
+          color: '#ffffff',
+          font: {
+            size: 12
           },
+          callback: (value) => {
+            return new Intl.NumberFormat('en-US', {
+              style: 'currency',
+              currency: 'USD',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0
+            }).format(value as number);
+          }
         },
-      },
-    },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)'
+        }
+      }
+    }
   };
-
-  if (loading) {
-    return (
-      <Container>
-        <ChartTitle>Bitcoin Price Trend</ChartTitle>
-        <ChartContainer>
-          <LoadingText>Loading Bitcoin price data...</LoadingText>
-        </ChartContainer>
-      </Container>
-    );
-  }
-
-  if (error) {
-    return (
-      <Container>
-        <ChartTitle>Bitcoin Price Trend</ChartTitle>
-        <ChartContainer>
-          <ErrorText>{error}</ErrorText>
-        </ChartContainer>
-      </Container>
-    );
-  }
 
   return (
     <Container id={id}>
