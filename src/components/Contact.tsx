@@ -1,91 +1,165 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-
-const ContactSection = styled.section`
-  min-height: 100vh;
-  padding: 100px 20px;
-  background: #f8f9fa;
-`;
-
-const Container = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
-`;
-
-const Title = styled.h2`
-  font-size: 2.5rem;
-  text-align: center;
-  margin-bottom: 3rem;
-  color: #333;
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-`;
-
-const Input = styled.input`
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
-
-  &:focus {
-    outline: none;
-    border-color: #3498db;
-  }
-`;
-
-const TextArea = styled.textarea`
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 1rem;
-  min-height: 150px;
-  resize: vertical;
-  transition: border-color 0.3s ease;
-
-  &:focus {
-    outline: none;
-    border-color: #3498db;
-  }
-`;
-
-const SubmitButton = styled(motion.button)`
-  padding: 1rem 2rem;
-  background: #3498db;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background: #2980b9;
-  }
-
-  &:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-  }
-`;
-
-const Message = styled.div<{ success?: boolean }>`
-  padding: 1rem;
-  margin-top: 1rem;
-  border-radius: 5px;
-  text-align: center;
-  background: ${props => props.success ? '#d4edda' : '#f8d7da'};
-  color: ${props => props.success ? '#155724' : '#721c24'};
-`;
+import { FaGithub, FaLinkedin, FaTwitter, FaEnvelope } from 'react-icons/fa';
 
 interface ContactProps {
   id?: string;
 }
+
+const ContactContainer = styled.div`
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+`;
+
+const Content = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+
+  @media (max-width: 968px) {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+`;
+
+const ContactInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+`;
+
+const Title = styled(motion.h2)`
+  font-size: 2.5rem;
+  color: #64ffda;
+  margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+`;
+
+const Description = styled(motion.p)`
+  font-size: 1.1rem;
+  color: #8892b0;
+  line-height: 1.8;
+  margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
+`;
+
+const ContactForm = styled(motion.form)`
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+`;
+
+const FormGroup = styled.div`
+  margin-bottom: 20px;
+`;
+
+const Label = styled.label`
+  display: block;
+  color: #64ffda;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(100, 255, 218, 0.2);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #64ffda;
+    box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
+  }
+`;
+
+const TextArea = styled.textarea`
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(100, 255, 218, 0.2);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 1rem;
+  min-height: 150px;
+  resize: vertical;
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #64ffda;
+    box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
+  }
+`;
+
+const SubmitButton = styled(motion.button)`
+  background: rgba(100, 255, 218, 0.1);
+  color: #64ffda;
+  border: 1px solid rgba(100, 255, 218, 0.2);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+
+  &:hover {
+    background: rgba(100, 255, 218, 0.2);
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+`;
+
+const SocialLinks = styled(motion.div)`
+  display: flex;
+  gap: 20px;
+  margin-top: 30px;
+
+  @media (max-width: 968px) {
+    justify-content: center;
+  }
+`;
+
+const SocialLink = styled.a`
+  color: #64ffda;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: #ffffff;
+    transform: translateY(-2px);
+  }
+`;
+
+const SuccessMessage = styled(motion.div)`
+  color: #64ffda;
+  background: rgba(100, 255, 218, 0.1);
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 20px;
+  text-align: center;
+`;
 
 const Contact: React.FC<ContactProps> = ({ id }) => {
   const [formData, setFormData] = useState({
@@ -93,22 +167,8 @@ const Contact: React.FC<ContactProps> = ({ id }) => {
     email: '',
     message: ''
   });
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus('submitting');
-
-    try {
-      // Here you would typically send the form data to your backend
-      // For now, we'll simulate an API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setStatus('success');
-      setFormData({ name: '', email: '', message: '' });
-    } catch (error) {
-      setStatus('error');
-    }
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -118,58 +178,122 @@ const Contact: React.FC<ContactProps> = ({ id }) => {
     }));
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    // Simulate form submission
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Here you would typically send the form data to your backend
+    console.log('Form submitted:', formData);
+    
+    setIsSubmitting(false);
+    setIsSubmitted(true);
+    setFormData({ name: '', email: '', message: '' });
+  };
+
   return (
-    <ContactSection id={id}>
-      <Container>
-        <Title>Get In Touch</Title>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+    <ContactContainer id={id}>
+      <Content>
+        <ContactInfo>
+          <Title
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            Get In Touch
+          </Title>
+          <Description
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
+            I'm always interested in hearing about new projects and opportunities. 
+            Whether you have a question about blockchain development, smart contracts, 
+            or just want to say hi, I'll try my best to get back to you!
+          </Description>
+          <SocialLinks
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            viewport={{ once: true }}
+          >
+            <SocialLink href="https://github.com/wjllance" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+              <FaGithub />
+            </SocialLink>
+            <SocialLink href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+              <FaLinkedin />
+            </SocialLink>
+            <SocialLink href="https://twitter.com/" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+              <FaTwitter />
+            </SocialLink>
+            <SocialLink href="mailto:your.email@example.com" aria-label="Email">
+              <FaEnvelope />
+            </SocialLink>
+          </SocialLinks>
+        </ContactInfo>
+        <ContactForm
+          initial={{ opacity: 0, x: 20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          onSubmit={handleSubmit}
         >
-          <Form onSubmit={handleSubmit}>
+          <FormGroup>
+            <Label htmlFor="name">Name</Label>
             <Input
               type="text"
+              id="name"
               name="name"
-              placeholder="Your Name"
               value={formData.name}
               onChange={handleChange}
               required
             />
+          </FormGroup>
+          <FormGroup>
+            <Label htmlFor="email">Email</Label>
             <Input
               type="email"
+              id="email"
               name="email"
-              placeholder="Your Email"
               value={formData.email}
               onChange={handleChange}
               required
             />
+          </FormGroup>
+          <FormGroup>
+            <Label htmlFor="message">Message</Label>
             <TextArea
+              id="message"
               name="message"
-              placeholder="Your Message"
               value={formData.message}
               onChange={handleChange}
               required
             />
-            <SubmitButton
-              type="submit"
-              disabled={status === 'submitting'}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+          </FormGroup>
+          <SubmitButton
+            type="submit"
+            disabled={isSubmitting}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            {isSubmitting ? 'Sending...' : 'Send Message'}
+          </SubmitButton>
+          {isSubmitted && (
+            <SuccessMessage
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
             >
-              {status === 'submitting' ? 'Sending...' : 'Send Message'}
-            </SubmitButton>
-          </Form>
-          {status === 'success' && (
-            <Message success>Thank you for your message! I'll get back to you soon.</Message>
+              Thank you for your message! I'll get back to you soon.
+            </SuccessMessage>
           )}
-          {status === 'error' && (
-            <Message>Sorry, something went wrong. Please try again later.</Message>
-          )}
-        </motion.div>
-      </Container>
-    </ContactSection>
+        </ContactForm>
+      </Content>
+    </ContactContainer>
   );
 };
 
