@@ -1,46 +1,67 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Nav = styled.nav`
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 60px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(5px);
+  height: 64px;
+  background: rgba(10, 25, 47, 0.85);
+  backdrop-filter: blur(10px);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 50px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  border-bottom: 1px solid rgba(100, 255, 218, 0.1);
 
   @media (max-width: 768px) {
-    padding: 0 20px;
+    padding: 0 24px;
+    height: 60px;
   }
 `;
 
-const Logo = styled.span`
-  font-size: 1.5rem;
+const Logo = styled(motion.span)`
+  font-size: 1.8rem;
   font-weight: 700;
-  color: #2c3e50;
-  transition: color 0.3s ease;
-
+  color: #64ffda;
+  letter-spacing: -0.02em;
+  
   &:hover {
-    color: #3498db;
+    color: #fff;
   }
 `;
 
 const LogoLink = styled(Link)`
   display: flex;
   align-items: center;
+  text-decoration: none;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #64ffda;
+    transition: width 0.3s ease;
+  }
+
+  &:hover::after {
+    width: 100%;
+  }
 `;
 
 const NavLinks = styled.div`
   display: flex;
-  gap: 30px;
+  gap: 40px;
+  align-items: center;
 
   @media (max-width: 768px) {
     display: none;
@@ -48,63 +69,115 @@ const NavLinks = styled.div`
 `;
 
 const NavLink = styled.a<{ active?: boolean }>`
-  color: ${props => props.active ? '#3498db' : '#2c3e50'};
-  font-weight: ${props => props.active ? '600' : '400'};
+  color: ${props => props.active ? '#64ffda' : 'rgba(255, 255, 255, 0.85)'};
+  font-weight: ${props => props.active ? '600' : '500'};
+  font-size: 0.95rem;
   transition: all 0.3s ease;
   cursor: pointer;
+  text-decoration: none;
+  position: relative;
+  padding: 5px 0;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: ${props => props.active ? '100%' : '0'};
+    height: 2px;
+    background-color: #64ffda;
+    transition: width 0.3s ease;
+  }
 
   &:hover {
-    color: #3498db;
+    color: #64ffda;
+    
+    &::after {
+      width: 100%;
+    }
   }
 `;
 
 const DevToolsLink = styled(Link)<{ active?: boolean }>`
-  color: ${props => props.active ? '#3498db' : '#2c3e50'};
-  font-weight: ${props => props.active ? '600' : '400'};
+  color: ${props => props.active ? '#64ffda' : 'rgba(255, 255, 255, 0.85)'};
+  font-weight: ${props => props.active ? '600' : '500'};
+  font-size: 0.95rem;
   transition: all 0.3s ease;
+  text-decoration: none;
+  position: relative;
+  padding: 6px 16px;
+  border-radius: 8px;
+  background: ${props => props.active ? 'rgba(100, 255, 218, 0.1)' : 'transparent'};
+  border: 1px solid ${props => props.active ? 'rgba(100, 255, 218, 0.2)' : 'transparent'};
 
   &:hover {
-    color: #3498db;
+    color: #64ffda;
+    background: rgba(100, 255, 218, 0.1);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    transform: translateY(-1px);
   }
 `;
 
-const MobileMenuButton = styled.button`
+const MobileMenuButton = styled(motion.button)`
   display: none;
   background: none;
   border: none;
-  font-size: 1.5rem;
   cursor: pointer;
-  color: #2c3e50;
+  color: #64ffda;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
 
   @media (max-width: 768px) {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &:hover {
+    background: rgba(100, 255, 218, 0.1);
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
   }
 `;
 
-const MobileMenu = styled.div<{ isOpen: boolean }>`
+const MobileMenu = styled(motion.div)<{ isOpen: boolean }>`
   display: none;
   position: fixed;
   top: 60px;
   left: 0;
   right: 0;
-  background: white;
+  background: rgba(10, 25, 47, 0.98);
+  backdrop-filter: blur(10px);
   padding: 20px;
-  transform: ${props => props.isOpen ? 'translateY(0)' : 'translateY(-100%)'};
-  transition: transform 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(100, 255, 218, 0.1);
 
   @media (max-width: 768px) {
     display: block;
   }
 `;
 
-const MobileNavLink = styled(NavLink)`
+const MobileNavLink = styled(motion.a)`
   display: block;
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
+  padding: 16px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+  font-size: 1.1rem;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  margin-bottom: 8px;
 
   &:last-child {
-    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  &:hover {
+    color: #64ffda;
+    background: rgba(100, 255, 218, 0.1);
   }
 `;
 
@@ -138,7 +211,6 @@ const Navbar: React.FC = () => {
   const handleNavClick = (section: string) => {
     if (location.pathname !== '/') {
       navigate('/');
-      // Wait for navigation to complete before scrolling
       setTimeout(() => {
         const element = document.getElementById(section);
         if (element) {
@@ -154,11 +226,42 @@ const Navbar: React.FC = () => {
     setIsOpen(false);
   };
 
+  const menuVariants = {
+    open: { 
+      opacity: 1,
+      height: 'auto',
+      transition: { duration: 0.3, ease: 'easeOut' }
+    },
+    closed: { 
+      opacity: 0,
+      height: 0,
+      transition: { duration: 0.3, ease: 'easeIn' }
+    }
+  };
+
+  const itemVariants = {
+    open: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.3, ease: 'easeOut' }
+    },
+    closed: {
+      opacity: 0,
+      y: -20,
+      transition: { duration: 0.3, ease: 'easeIn' }
+    }
+  };
+
   return (
     <>
       <Nav>
         <LogoLink to="/" onClick={() => handleNavClick('home')}>
-          <Logo>LW</Logo>
+          <Logo
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            LW
+          </Logo>
         </LogoLink>
         <NavLinks>
           <NavLink 
@@ -186,16 +289,61 @@ const Navbar: React.FC = () => {
             DevTools
           </DevToolsLink>
         </NavLinks>
-        <MobileMenuButton onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? '✕' : '☰'}
+        <MobileMenuButton 
+          onClick={() => setIsOpen(!isOpen)}
+          whileTap={{ scale: 0.95 }}
+        >
+          {isOpen ? (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          )}
         </MobileMenuButton>
       </Nav>
-      <MobileMenu isOpen={isOpen}>
-        <MobileNavLink onClick={() => handleNavClick('home')}>Home</MobileNavLink>
-        <MobileNavLink onClick={() => handleNavClick('about')}>About</MobileNavLink>
-        <MobileNavLink onClick={() => handleNavClick('contact')}>Contact</MobileNavLink>
-        <MobileNavLink as={Link} to="/devtools">DevTools</MobileNavLink>
-      </MobileMenu>
+      <AnimatePresence>
+        {isOpen && (
+          <MobileMenu
+            isOpen={isOpen}
+            initial="closed"
+            animate="open"
+            exit="closed"
+            variants={menuVariants}
+          >
+            <MobileNavLink
+              as={motion.a}
+              variants={itemVariants}
+              onClick={() => handleNavClick('home')}
+            >
+              Home
+            </MobileNavLink>
+            <MobileNavLink
+              as={motion.a}
+              variants={itemVariants}
+              onClick={() => handleNavClick('about')}
+            >
+              About
+            </MobileNavLink>
+            <MobileNavLink
+              as={motion.a}
+              variants={itemVariants}
+              onClick={() => handleNavClick('contact')}
+            >
+              Contact
+            </MobileNavLink>
+            <MobileNavLink
+              as={motion(Link)}
+              variants={itemVariants}
+              to="/devtools"
+            >
+              DevTools
+            </MobileNavLink>
+          </MobileMenu>
+        )}
+      </AnimatePresence>
     </>
   );
 };
