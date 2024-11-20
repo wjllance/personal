@@ -154,9 +154,11 @@ const MobileMenu = styled(motion.div)<{ isOpen: boolean }>`
   backdrop-filter: blur(10px);
   padding: 20px;
   border-bottom: 1px solid rgba(100, 255, 218, 0.1);
+  z-index: 999;
+  overflow: hidden;
 
   @media (max-width: 768px) {
-    display: block;
+    display: ${props => props.isOpen ? 'block' : 'none'};
   }
 `;
 
@@ -170,6 +172,8 @@ const MobileNavLink = styled(motion.a)`
   border-radius: 8px;
   transition: all 0.3s ease;
   margin-bottom: 8px;
+  text-align: center;
+  background: rgba(100, 255, 218, 0.05);
 
   &:last-child {
     margin-bottom: 0;
@@ -178,7 +182,18 @@ const MobileNavLink = styled(motion.a)`
   &:hover {
     color: #64ffda;
     background: rgba(100, 255, 218, 0.1);
+    transform: translateY(-2px);
   }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+const MobileNavDevToolsLink = styled(MobileNavLink)`
+  background: rgba(100, 255, 218, 0.1);
+  border: 1px solid rgba(100, 255, 218, 0.2);
+  color: #64ffda;
 `;
 
 const Navbar: React.FC = () => {
@@ -208,6 +223,21 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   const handleNavClick = (section: string) => {
     if (location.pathname !== '/') {
       navigate('/');
@@ -230,12 +260,21 @@ const Navbar: React.FC = () => {
     open: { 
       opacity: 1,
       height: 'auto',
-      transition: { duration: 0.3, ease: 'easeOut' }
+      transition: { 
+        duration: 0.3,
+        ease: 'easeOut',
+        staggerChildren: 0.1
+      }
     },
     closed: { 
       opacity: 0,
       height: 0,
-      transition: { duration: 0.3, ease: 'easeIn' }
+      transition: { 
+        duration: 0.3,
+        ease: 'easeIn',
+        staggerChildren: 0.05,
+        staggerDirection: -1
+      }
     }
   };
 
@@ -247,7 +286,7 @@ const Navbar: React.FC = () => {
     },
     closed: {
       opacity: 0,
-      y: -20,
+      y: 20,
       transition: { duration: 0.3, ease: 'easeIn' }
     }
   };
@@ -292,16 +331,26 @@ const Navbar: React.FC = () => {
         <MobileMenuButton 
           onClick={() => setIsOpen(!isOpen)}
           whileTap={{ scale: 0.95 }}
+          aria-label={isOpen ? "Close menu" : "Open menu"}
         >
-          {isOpen ? (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          )}
+          <motion.div
+            animate={isOpen ? "open" : "closed"}
+            variants={{
+              open: { rotate: 180 },
+              closed: { rotate: 0 }
+            }}
+            transition={{ duration: 0.3 }}
+          >
+            {isOpen ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </motion.div>
         </MobileMenuButton>
       </Nav>
       <AnimatePresence>
@@ -334,13 +383,14 @@ const Navbar: React.FC = () => {
             >
               Contact
             </MobileNavLink>
-            <MobileNavLink
+            <MobileNavDevToolsLink
               as={motion(Link)}
               variants={itemVariants}
               to="/devtools"
+              onClick={() => setIsOpen(false)}
             >
               DevTools
-            </MobileNavLink>
+            </MobileNavDevToolsLink>
           </MobileMenu>
         )}
       </AnimatePresence>
