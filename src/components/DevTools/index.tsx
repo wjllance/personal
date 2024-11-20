@@ -17,11 +17,11 @@ import {
 const JsonFormatter = React.lazy(() => import('./tools/JsonFormatter'));
 const TimestampConverter = React.lazy(() => import('./tools/TimestampConverter'));
 const UniswapPriceConverter = React.lazy(() => import('./tools/UniswapPriceConverter'));
+const UniswapPoolInfo = React.lazy(() => import('./tools/UniswapPoolInfo'));
 const EthAddressValidator = React.lazy(() => import('./tools/EthAddressValidator'));
 const TokenDecoder = React.lazy(() => import('./tools/TokenDecoder'));
-const TransactionDecoder = React.lazy(() => import('./tools/TransactionDecoder'));
 
-type Tool = 'json' | 'timestamp' | 'uniswap' | 'eth-address' | 'token' | 'transaction';
+type Tool = 'json' | 'timestamp' | 'uniswap' | 'pool-info' | 'eth-address' | 'token' ;
 
 interface ToolDefinition {
   id: Tool;
@@ -49,6 +49,12 @@ const tools: ToolDefinition[] = [
     component: UniswapPriceConverter,
     description: 'Calculate Uniswap token prices and liquidity'
   },
+  {
+    id: 'pool-info',
+    name: 'Uniswap Pool Info',
+    component: UniswapPoolInfo,
+    description: 'Fetch Uniswap V3 pool information and token details'
+  },
   { 
     id: 'eth-address',
     name: 'ETH Address Validator',
@@ -61,12 +67,6 @@ const tools: ToolDefinition[] = [
     component: TokenDecoder,
     description: 'Decode ERC20 token data and transactions'
   },
-  { 
-    id: 'transaction',
-    name: 'Transaction Decoder',
-    component: TransactionDecoder,
-    description: 'Decode Ethereum transaction data'
-  }
 ];
 
 const LoadingSpinner = styled.div`

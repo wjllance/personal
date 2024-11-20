@@ -145,6 +145,39 @@ export const TextArea = styled.textarea`
   resize: vertical;
 `;
 
+export const Select = styled.select`
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-family: inherit;
+  background-color: white;
+  cursor: pointer;
+  color: #2c3e50;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+  padding-right: 40px;
+
+  &:hover {
+    border-color: #3498db;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  }
+
+  & option {
+    color: #2c3e50;
+    padding: 8px;
+  }
+`;
+
 export const Button = styled(motion.button)`
   background: #3498db;
   color: white;
@@ -161,21 +194,64 @@ export const Button = styled(motion.button)`
   }
 `;
 
-export const Result = styled.pre`
+export const Result = styled.div`
+  margin-top: 20px;
+  padding: 20px;
   background: #f8f9fa;
-  padding: 15px;
-  border-radius: 5px;
-  overflow-x: auto;
-  margin-top: 10px;
-  font-family: 'Courier New', monospace;
-  white-space: pre-wrap;
-  word-break: break-all;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
 `;
 
 export const ErrorMessage = styled.div`
-  color: #e74c3c;
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 5px;
-  background: #fde8e8;
+  padding: 12px;
+  background-color: #fee2e2;
+  color: #dc2626;
+  border-radius: 6px;
+  border: 1px solid #fecaca;
+  margin: 10px 0;
+`;
+
+export const LoadingSpinner = styled.div`
+  width: 30px;
+  height: 30px;
+  margin: 20px auto;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
+export const ResultTable = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+export const ResultRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const ResultLabel = styled.span`
+  font-weight: 500;
+  color: #4a5568;
+`;
+
+export const ResultValue = styled.span`
+  color: #2d3748;
+  word-break: break-all;
+  text-align: right;
+  max-width: 70%;
 `;
