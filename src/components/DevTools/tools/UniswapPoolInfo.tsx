@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { ethers } from 'ethers';
+import Decimal from 'decimal.js';
+import JSBI from 'jsbi';
 import {
   Tool,
   ToolTitle,
@@ -99,28 +101,46 @@ const UniswapPoolInfo: React.FC = () => {
 
   const calculatePrice = (sqrtPriceX96: bigint, decimals0: number, decimals1: number): number => {
     try {
-      const numerator = sqrtPriceX96 * sqrtPriceX96;
-      const denominator = 2n ** 192n;
-      const decimalDiff = Math.abs(decimals1 - decimals0);
-      const scale = 10n ** BigInt(decimalDiff);
+      // Set precision to handle the large numbers
+      Decimal.set({ precision: 40 });
+
+      // Convert sqrtPriceX96 to Decimal
+      const sqrtPrice = new Decimal(sqrtPriceX96.toString());
       
-      let price: number;
-      if (decimals1 >= decimals0) {
-        const scaledPrice = (numerator * scale) / denominator;
-        price = Number(ethers.formatUnits(scaledPrice, decimalDiff));
-      } else {
-        const scaledPrice = numerator / (denominator * scale);
-        price = Number(ethers.formatUnits(scaledPrice, 0)) * (10 ** decimalDiff);
+      // Calculate 2^96
+      const Q96 = new Decimal(2).pow(96);
+      
+      // First get sqrt of the price
+      const sqrtPriceDecimal = sqrtPrice.div(Q96);
+      
+      // Square it to get the actual price
+      let price = sqrtPriceDecimal.mul(sqrtPriceDecimal);
+      
+      // Adjust for decimal places
+      const decimalDiff = decimals0 - decimals1;
+      if (decimalDiff !== 0) {
+        const adjustment = new Decimal(10).pow(decimalDiff);
+        price = price.mul(adjustment);
       }
       
-      if (isNaN(price) || !isFinite(price)) {
+      // Convert to number for display
+      // Use toString() and parseFloat to handle very large/small numbers better
+      const priceNum = parseFloat(price.toString());
+      
+      if (isNaN(priceNum) || !isFinite(priceNum)) {
+        console.error('Invalid price result:', {
+          sqrtPriceX96: sqrtPriceX96.toString(),
+          decimals0,
+          decimals1,
+          price: price.toString()
+        });
         throw new Error('Invalid price calculation result');
       }
       
-      return price;
+      return priceNum;
     } catch (err) {
       console.error('Price calculation error:', err);
-      throw new Error('Failed to calculate price');
+      throw new Error(`Failed to calculate price: ${err instanceof Error ? err.message : 'unknown error'}`);
     }
   };
 
