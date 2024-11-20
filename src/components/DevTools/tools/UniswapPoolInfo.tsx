@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { ethers } from 'ethers';
 import Decimal from 'decimal.js';
-import JSBI from 'jsbi';
 import {
   Tool,
   ToolTitle,
@@ -104,28 +103,24 @@ const UniswapPoolInfo: React.FC = () => {
       // Set precision to handle the large numbers
       Decimal.set({ precision: 40 });
 
-      // Convert sqrtPriceX96 to Decimal
+      // Convert sqrtPriceX96 to Decimal and calculate price
       const sqrtPrice = new Decimal(sqrtPriceX96.toString());
-      
-      // Calculate 2^96
       const Q96 = new Decimal(2).pow(96);
       
-      // First get sqrt of the price
-      const sqrtPriceDecimal = sqrtPrice.div(Q96);
-      
-      // Square it to get the actual price
-      let price = sqrtPriceDecimal.mul(sqrtPriceDecimal);
-      
+      // Calculate price = (sqrtPrice/2^96)^2
+      let price = sqrtPrice.div(Q96).pow(2);
+
       // Adjust for decimal places
+      // If token0 has more decimals than token1, multiply the price
+      // If token1 has more decimals than token0, divide the price
       const decimalDiff = decimals0 - decimals1;
       if (decimalDiff !== 0) {
-        const adjustment = new Decimal(10).pow(decimalDiff);
-        price = price.mul(adjustment);
+        const adjustment = new Decimal(10).pow(Math.abs(decimalDiff));
+        price = decimalDiff > 0 ? price.mul(adjustment) : price.div(adjustment);
       }
-      
+
       // Convert to number for display
-      // Use toString() and parseFloat to handle very large/small numbers better
-      const priceNum = parseFloat(price.toString());
+      const priceNum = parseFloat(price.toFixed(8));
       
       if (isNaN(priceNum) || !isFinite(priceNum)) {
         console.error('Invalid price result:', {
@@ -340,11 +335,8 @@ const UniswapPoolInfo: React.FC = () => {
               <ResultValue>
                 <div>
                   1 {poolInfo.token0.symbol} = {poolInfo.price.toFixed(6)} {poolInfo.token1.symbol}
-                  {poolInfo.token0.usdPrice !== null && poolInfo.token1.usdPrice !== null && (
-                    <div>
-                      (${(poolInfo.token0.usdPrice).toFixed(4)} = ${(poolInfo.token0.usdPrice * poolInfo.price).toFixed(4)})
-                    </div>
-                  )}
+                  <br />
+                  1 {poolInfo.token1.symbol} = {(new Decimal(1).div(new Decimal(poolInfo.price))).toFixed(6)} {poolInfo.token0.symbol}
                 </div>
               </ResultValue>
             </ResultRow>
