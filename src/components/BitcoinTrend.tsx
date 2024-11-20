@@ -13,6 +13,7 @@ import {
   ChartOptions
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import BitcoinLogoSrc from '../assets/bitcoin-logo.svg';
 
 ChartJS.register(
   CategoryScale,
@@ -420,7 +421,7 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
           <HeaderTop>
             <TitleGroup>
               <BitcoinLogo 
-                src="https://upload.wikimedia.org/commons/thumb/4/46/Bitcoin.svg/1024px-Bitcoin.svg.png" 
+                src="" 
                 alt="Bitcoin logo"
               />
               <Title>BTC/USD Live</Title>
@@ -448,7 +449,7 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
           <HeaderTop>
             <TitleGroup>
               <BitcoinLogo 
-                src="https://upload.wikimedia.org/commons/thumb/4/46/Bitcoin.svg/1024px-Bitcoin.svg.png" 
+                src={BitcoinLogoSrc} 
                 alt="Bitcoin logo"
               />
               <Title>BTC/USD Live</Title>
@@ -645,7 +646,7 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
         <HeaderTop>
           <TitleGroup>
             <BitcoinLogo 
-              src="https://upload.wikimedia.org/commons/thumb/4/46/Bitcoin.svg/1024px-Bitcoin.svg.png" 
+              src={BitcoinLogoSrc} 
               alt="Bitcoin logo"
             />
             <Title>BTC/USD Live</Title>
