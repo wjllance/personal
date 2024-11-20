@@ -28,32 +28,30 @@ interface BitcoinTrendProps {
 }
 
 const Container = styled.section`
-  padding: 50px 20px;
+  padding: 20px;
   background: linear-gradient(to right, #000046, #1CB5E0);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
 `;
 
 const ChartContainer = styled.div`
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 30px;
+  border-radius: 15px;
+  padding: 20px;
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  margin: 20px auto;
-  width: 90%;
-  max-width: 1200px;
-  height: 500px;
+  width: 100%;
+  height: 300px;
 `;
 
-const ChartTitle = styled.h2`
+const ChartTitle = styled.h3`
   text-align: center;
   color: #ffffff;
-  margin-bottom: 30px;
-  font-size: 2.5rem;
-  font-weight: 700;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 `;
 
 const LoadingText = styled.div`

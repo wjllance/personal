@@ -48,7 +48,6 @@ const App: React.FC = () => {
           <Route path="/" element={
             <MainContent>
               <Hero id="home" />
-              <BitcoinTrend id="bitcoin" />
               <About id="about" />
               <Projects id="projects" />
               <Contact id="contact" />

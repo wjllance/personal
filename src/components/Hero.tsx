@@ -2,24 +2,27 @@ import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa';
+import BitcoinTrend from './BitcoinTrend';
 
 interface HeroProps {
   id?: string;
 }
 
 const HeroSection = styled.section`
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #3498db, #2ecc71);
   color: white;
-  padding: 0 20px;
+  padding: 40px 20px;
 `;
 
 const Content = styled.div`
   text-align: center;
   max-width: 800px;
+  margin-bottom: 20px;
 `;
 
 const Title = styled(motion.h1)`
@@ -37,6 +40,7 @@ const SocialLinks = styled(motion.div)`
   display: flex;
   justify-content: center;
   gap: 2rem;
+  margin-bottom: 40px;
 `;
 
 const SocialLink = styled.a`
@@ -82,6 +86,13 @@ const Hero: React.FC<HeroProps> = ({ id }) => {
             <FaTwitter />
           </SocialLink>
         </SocialLinks>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+        >
+          <BitcoinTrend />
+        </motion.div>
       </Content>
     </HeroSection>
   );
