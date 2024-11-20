@@ -54,7 +54,7 @@ const Hero: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          Hi, I'm Junlin Wu
+          Hi, I'm Lance Wu
         </Title>
         <Subtitle
           initial={{ opacity: 0, y: -20 }}
@@ -68,7 +68,7 @@ const Hero: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
-          <SocialLink href="https://github.com/" target="_blank" rel="noopener noreferrer">
+          <SocialLink href="https://github.com/wjllance" target="_blank" rel="noopener noreferrer">
             <FaGithub />
           </SocialLink>
           <SocialLink href="https://linkedin.com/" target="_blank" rel="noopener noreferrer">

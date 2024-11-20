@@ -80,7 +80,7 @@ const About: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <ProfileImage src="/images/Avatar.jpg" alt="Junlin Wu" />
+            <ProfileImage src="/images/Avatar.jpg" alt="Lance Wu" />
           </motion.div>
           <TextContent>
             <motion.div

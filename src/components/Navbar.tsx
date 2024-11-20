@@ -115,7 +115,7 @@ const Navbar: React.FC = () => {
 
   return (
     <Nav>
-      <Logo to="/">Junlin Wu</Logo>
+      <Logo to="/">Lance Wu</Logo>
       <NavLinks>
         <NavLink 
           href="#home"

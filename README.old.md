@@ -1,4 +1,4 @@
-# Junlin Wu - Personal Portfolio Website
+# Lance Wu - Personal Portfolio Website
 
 ## Overview
 A modern, responsive personal portfolio website showcasing professional skills, projects, and contact information.
@@ -32,8 +32,8 @@ A modern, responsive personal portfolio website showcasing professional skills, 
 - Dark/light mode toggle
 
 ## Contact
-Junlin Wu
-- Email: junlinwu@example.com
+Lance Wu
+- Email: wjllance@gmail.com
 - LinkedIn: [Your LinkedIn Profile]
 - GitHub: [Your GitHub Profile]
 
