@@ -290,6 +290,7 @@ const UniswapPoolInfo: React.FC = () => {
                   >
                     {poolInfo.token0.address}
                   </a>
+                  <div>Decimals: {poolInfo.token0.decimals}</div>
                   {poolInfo.token0.usdPrice !== null && (
                     <div>Price: ${poolInfo.token0.usdPrice.toFixed(4)}</div>
                   )}
@@ -307,6 +308,7 @@ const UniswapPoolInfo: React.FC = () => {
                   >
                     {poolInfo.token1.address}
                   </a>
+                  <div>Decimals: {poolInfo.token1.decimals}</div>
                   {poolInfo.token1.usdPrice !== null && (
                     <div>Price: ${poolInfo.token1.usdPrice.toFixed(4)}</div>
                   )}
