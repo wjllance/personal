@@ -44,13 +44,57 @@ const ChartContainer = styled.div`
   margin-top: 20px;
 `;
 
-const ChartTitle = styled.h3`
-  text-align: center;
-  color: #ffffff;
-  margin-bottom: 20px;
-  font-size: 1.5rem;
-  font-weight: 600;
-  opacity: 0.9;
+const ChartTitle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+`;
+
+const BitcoinLogo = styled.img`
+  width: 32px;
+  height: 32px;
+  filter: drop-shadow(0 0 8px rgba(247, 147, 26, 0.5));
+  animation: pulse 2s infinite;
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+`;
+
+const TitleText = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const MainTitle = styled.h3`
+  color: #64ffda;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
+`;
+
+const SubTitle = styled.span`
+  color: #8892b0;
+  font-size: 0.9rem;
+  margin-top: 4px;
+`;
+
+const PriceHighlight = styled.span`
+  color: #f7931a;
+  font-weight: 700;
 `;
 
 const TimeframeContainer = styled.div`
@@ -124,7 +168,15 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
   if (!priceData || loading) {
     return (
       <Container id={id}>
-        <ChartTitle>Bitcoin Price Trend</ChartTitle>
+        <ChartTitle>
+          <BitcoinLogo src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1024px-Bitcoin.svg.png" alt="Bitcoin logo" />
+          <TitleText>
+            <MainTitle>
+              BTC/USD <PriceHighlight>Live</PriceHighlight>
+            </MainTitle>
+            <SubTitle>Real-time Bitcoin price chart</SubTitle>
+          </TitleText>
+        </ChartTitle>
         <LoadingText>Loading Bitcoin price data...</LoadingText>
       </Container>
     );
@@ -275,7 +327,15 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
 
   return (
     <Container id={id}>
-      <ChartTitle>Bitcoin Price Trend</ChartTitle>
+      <ChartTitle>
+        <BitcoinLogo src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1024px-Bitcoin.svg.png" alt="Bitcoin logo" />
+        <TitleText>
+          <MainTitle>
+            BTC/USD <PriceHighlight>Live</PriceHighlight>
+          </MainTitle>
+          <SubTitle>Real-time Bitcoin price chart</SubTitle>
+        </TitleText>
+      </ChartTitle>
       <TimeframeContainer>
         {(Object.keys(timeframeMap) as Timeframe[]).map((tf) => (
           <TimeframeButton
