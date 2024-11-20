@@ -105,7 +105,11 @@ interface Project {
   liveLink?: string;
 }
 
-const Projects: React.FC = () => {
+interface ProjectsProps {
+  id?: string;
+}
+
+const Projects: React.FC<ProjectsProps> = ({ id }) => {
   const projects: Project[] = [
     {
       title: "Project 1",
@@ -133,7 +137,7 @@ const Projects: React.FC = () => {
   ];
 
   return (
-    <ProjectsSection id="projects">
+    <ProjectsSection id={id}>
       <Container>
         <Title>My Projects</Title>
         <ProjectGrid>

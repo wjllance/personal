@@ -1,45 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { Link as ScrollLink } from 'react-scroll';
-import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 
 const Nav = styled.nav`
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 80px;
+  height: 60px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(5px);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 50px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+
+  @media (max-width: 768px) {
+    padding: 0 20px;
+  }
 `;
 
-const Logo = styled(RouterLink)`
+const Logo = styled(Link)`
   font-size: 1.5rem;
-  font-weight: bold;
-  color: #3498db;
-  text-decoration: none;
-`;
-
-const NavLinks = styled.div`
-  display: flex;
-  gap: 2rem;
-`;
-
-interface NavLinkProps {
-  isActive?: boolean;
-}
-
-const NavLink = styled.a<NavLinkProps>`
-  cursor: pointer;
-  color: ${props => props.isActive ? '#3498db' : '#333'};
-  text-decoration: none;
-  font-weight: 500;
+  font-weight: 700;
+  color: #2c3e50;
   transition: color 0.3s ease;
 
   &:hover {
@@ -47,116 +33,165 @@ const NavLink = styled.a<NavLinkProps>`
   }
 `;
 
+const NavLinks = styled.div`
+  display: flex;
+  gap: 30px;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const NavLink = styled.a<{ active?: boolean }>`
+  color: ${props => props.active ? '#3498db' : '#2c3e50'};
+  font-weight: ${props => props.active ? '600' : '400'};
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    color: #3498db;
+  }
+`;
+
+const DevToolsLink = styled(Link)<{ active?: boolean }>`
+  color: ${props => props.active ? '#3498db' : '#2c3e50'};
+  font-weight: ${props => props.active ? '600' : '400'};
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: #3498db;
+  }
+`;
+
+const MobileMenuButton = styled.button`
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #2c3e50;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+const MobileMenu = styled.div<{ isOpen: boolean }>`
+  display: none;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 20px;
+  transform: ${props => props.isOpen ? 'translateY(0)' : 'translateY(-100%)'};
+  transition: transform 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+const MobileNavLink = styled(NavLink)`
+  display: block;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
 const Navbar: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const isHome = location.pathname === '/';
+  const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const location = useLocation();
 
-  // Handle initial scroll to anchor on page load
   useEffect(() => {
-    if (isHome && location.hash) {
-      const id = location.hash.replace('#', '');
-      const element = document.getElementById(id);
-      if (element) {
-        setTimeout(() => {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }, 0);
-      }
-    }
-  }, [location.hash, isHome]);
-
-  // Monitor scroll position to update active section
-  useEffect(() => {
-    if (!isHome) return;
-
     const handleScroll = () => {
-      const sections = ['home', 'about', 'projects', 'contact'];
-      const scrollPosition = window.scrollY + window.innerHeight / 3;
-
-      for (const section of sections) {
+      const sections = ['home', 'bitcoin', 'about', 'projects', 'contact'];
+      const current = sections.find(section => {
         const element = document.getElementById(section);
         if (element) {
-          const { offsetTop, offsetHeight } = element;
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-            setActiveSection(section);
-            window.history.replaceState({}, '', section === 'home' ? '/' : `/#${section}`);
-            break;
-          }
+          const rect = element.getBoundingClientRect();
+          return rect.top <= 100 && rect.bottom >= 100;
         }
+        return false;
+      });
+      if (current) {
+        setActiveSection(current);
+        window.history.replaceState(null, '', `/#${current}`);
       }
     };
 
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Call once on mount to set initial active section
-
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isHome]);
+  }, []);
 
-  const handleNavClick = (to: string, event: React.MouseEvent) => {
-    event.preventDefault();
-    if (isHome) {
-      // Update URL with anchor and scroll
-      window.history.pushState({}, '', to === 'home' ? '/' : `/#${to}`);
-      const element = document.getElementById(to);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-      setActiveSection(to);
-    } else {
-      // Navigate to home with anchor
-      if (to === 'home') {
-        navigate('/');
-      } else {
-        navigate(`/#${to}`);
-      }
+  const handleNavClick = (sectionId: string) => {
+    setIsOpen(false);
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
   return (
-    <Nav>
-      <Logo to="/">Lance Wu</Logo>
-      <NavLinks>
-        <NavLink 
-          href="#home"
-          isActive={isHome && activeSection === 'home'} 
-          onClick={(e) => handleNavClick('home', e)}
-        >
-          Home
-        </NavLink>
-        <NavLink 
-          href="#about"
-          isActive={isHome && activeSection === 'about'} 
-          onClick={(e) => handleNavClick('about', e)}
-        >
-          About
-        </NavLink>
-        <NavLink 
-          href="#projects"
-          isActive={isHome && activeSection === 'projects'} 
-          onClick={(e) => handleNavClick('projects', e)}
-        >
-          Projects
-        </NavLink>
-        <NavLink 
-          href="#contact"
-          isActive={isHome && activeSection === 'contact'} 
-          onClick={(e) => handleNavClick('contact', e)}
-        >
-          Contact
-        </NavLink>
-        <RouterLink 
-          to="/devtools" 
-          style={{ 
-            textDecoration: 'none', 
-            color: location.pathname === '/devtools' ? '#3498db' : '#333',
-            fontWeight: 500
-          }}
-        >
-          Dev Tools
-        </RouterLink>
-      </NavLinks>
-    </Nav>
+    <>
+      <Nav>
+        <Logo to="/">Lance Wu</Logo>
+        <NavLinks>
+          <NavLink 
+            onClick={() => handleNavClick('home')}
+            active={activeSection === 'home'}
+          >
+            Home
+          </NavLink>
+          <NavLink 
+            onClick={() => handleNavClick('bitcoin')}
+            active={activeSection === 'bitcoin'}
+          >
+            Bitcoin
+          </NavLink>
+          <NavLink 
+            onClick={() => handleNavClick('about')}
+            active={activeSection === 'about'}
+          >
+            About
+          </NavLink>
+          <NavLink 
+            onClick={() => handleNavClick('projects')}
+            active={activeSection === 'projects'}
+          >
+            Projects
+          </NavLink>
+          <NavLink 
+            onClick={() => handleNavClick('contact')}
+            active={activeSection === 'contact'}
+          >
+            Contact
+          </NavLink>
+          <DevToolsLink 
+            to="/devtools"
+            active={location.pathname === '/devtools'}
+          >
+            DevTools
+          </DevToolsLink>
+        </NavLinks>
+        <MobileMenuButton onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? '✕' : '☰'}
+        </MobileMenuButton>
+      </Nav>
+      <MobileMenu isOpen={isOpen}>
+        <MobileNavLink onClick={() => handleNavClick('home')}>Home</MobileNavLink>
+        <MobileNavLink onClick={() => handleNavClick('bitcoin')}>Bitcoin</MobileNavLink>
+        <MobileNavLink onClick={() => handleNavClick('about')}>About</MobileNavLink>
+        <MobileNavLink onClick={() => handleNavClick('projects')}>Projects</MobileNavLink>
+        <MobileNavLink onClick={() => handleNavClick('contact')}>Contact</MobileNavLink>
+        <MobileNavLink as={Link} to="/devtools">DevTools</MobileNavLink>
+      </MobileMenu>
+    </>
   );
 };
 

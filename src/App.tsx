@@ -1,55 +1,65 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { createGlobalStyle, styled } from 'styled-components';
 import Navbar from './components/Navbar';
-import Home from './pages/Home';
+import Hero from './components/Hero';
 import DevTools from './components/DevTools/index';
 import About from './components/About';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
+import BitcoinTrend from './components/BitcoinTrend';
 
 const GlobalStyle = createGlobalStyle`
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    scroll-behavior: smooth;
   }
 
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    line-height: 1.6;
   }
 
-  html {
-    scroll-behavior: smooth;
+  a {
+    text-decoration: none;
+    color: inherit;
   }
 `;
 
 const PageWrapper = styled.div`
-  padding-top: 80px; // Account for fixed navbar
+  min-height: 100vh;
 `;
 
-function App() {
+const MainContent = styled.main`
+  padding-top: 60px; // Height of the navbar
+`;
+
+const App: React.FC = () => {
   return (
-    <Router>
+    <>
       <GlobalStyle />
       <Navbar />
       <PageWrapper>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={
+            <MainContent>
+              <Hero id="home" />
+              <BitcoinTrend id="bitcoin" />
+              <About id="about" />
+              <Projects id="projects" />
+              <Contact id="contact" />
+            </MainContent>
+          } />
           <Route path="/devtools" element={<DevTools />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/contact" element={<Contact />} />
-          {/* Redirect unknown paths to home */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </PageWrapper>
-    </Router>
+    </>
   );
-}
+};
 
 export default App;

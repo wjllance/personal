@@ -3,6 +3,10 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa';
 
+interface HeroProps {
+  id?: string;
+}
+
 const HeroSection = styled.section`
   height: 100vh;
   display: flex;
@@ -45,9 +49,9 @@ const SocialLink = styled.a`
   }
 `;
 
-const Hero: React.FC = () => {
+const Hero: React.FC<HeroProps> = ({ id }) => {
   return (
-    <HeroSection id="home">
+    <HeroSection id={id}>
       <Content>
         <Title
           initial={{ opacity: 0, y: -20 }}

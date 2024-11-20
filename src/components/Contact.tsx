@@ -83,7 +83,11 @@ const Message = styled.div<{ success?: boolean }>`
   color: ${props => props.success ? '#155724' : '#721c24'};
 `;
 
-const Contact: React.FC = () => {
+interface ContactProps {
+  id?: string;
+}
+
+const Contact: React.FC<ContactProps> = ({ id }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -115,7 +119,7 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <ContactSection id="contact">
+    <ContactSection id={id}>
       <Container>
         <Title>Get In Touch</Title>
         <motion.div

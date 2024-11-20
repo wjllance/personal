@@ -64,14 +64,18 @@ const Skill = styled(motion.div)`
   font-weight: 500;
 `;
 
-const About: React.FC = () => {
+interface AboutProps {
+  id?: string;
+}
+
+const About: React.FC<AboutProps> = ({ id }) => {
   const skills = [
     'React', 'TypeScript', 'Node.js', 'Python',
     'AWS', 'Docker', 'Git', 'CI/CD'
   ];
 
   return (
-    <AboutSection id="about">
+    <AboutSection id={id}>
       <Container>
         <Content>
           <motion.div
