@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { createGlobalStyle, styled } from 'styled-components';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
-import DevTools from './components/DevTools';
+import DevTools from './components/DevTools/index';
 import About from './components/About';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
