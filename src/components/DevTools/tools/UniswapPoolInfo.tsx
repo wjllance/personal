@@ -51,22 +51,36 @@ const CHAIN_CONFIGS: { [key: string]: ChainConfig } = {
   },
 };
 
+interface TokenPrice {
+  address: string;
+  usdPrice: number | null;
+}
+
 interface PoolInfo {
   token0: {
     address: string;
     symbol: string;
     decimals: number;
+    usdPrice: number | null;
   };
   token1: {
     address: string;
     symbol: string;
     decimals: number;
+    usdPrice: number | null;
   };
   fee: number;
   price: number;
   sqrtPriceX96: string;
   tick: number;
 }
+
+const COINGECKO_PLATFORM_IDS: { [key: string]: string } = {
+  mainnet: 'ethereum',
+  arbitrum: 'arbitrum-one',
+  optimism: 'optimistic-ethereum',
+  polygon: 'polygon-pos',
+};
 
 const UniswapPoolInfo: React.FC = () => {
   const [poolAddress, setPoolAddress] = useState('');
@@ -110,6 +124,40 @@ const UniswapPoolInfo: React.FC = () => {
     }
   };
 
+  const fetchTokenPrice = async (tokenAddress: string): Promise<number | null> => {
+    try {
+      const platformId = COINGECKO_PLATFORM_IDS[selectedChain];
+      const response = await fetch(
+        `https://api.coingecko.com/api/v3/simple/token_price/${platformId}?contract_addresses=${tokenAddress}&vs_currencies=usd`
+      );
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch token price');
+      }
+      
+      const data = await response.json();
+      return data[tokenAddress.toLowerCase()]?.usd ?? null;
+    } catch (error) {
+      console.error('Error fetching token price:', error);
+      return null;
+    }
+  };
+
+  const fetchTokenPrices = async (token0Address: string, token1Address: string): Promise<[number | null, number | null]> => {
+    try {
+      // Fetch prices sequentially to avoid API limits
+      const token0Price = await fetchTokenPrice(token0Address);
+      // Add a small delay between requests to be nice to the API
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const token1Price = await fetchTokenPrice(token1Address);
+      
+      return [token0Price, token1Price];
+    } catch (error) {
+      console.error('Error fetching token prices:', error);
+      return [null, null];
+    }
+  };
+
   const fetchPoolInfo = async () => {
     try {
       setError('');
@@ -143,16 +191,17 @@ const UniswapPoolInfo: React.FC = () => {
         token1Symbol,
         token0Decimals,
         token1Decimals,
+        [token0Price, token1Price],
       ] = await Promise.all([
         token0Contract.symbol(),
         token1Contract.symbol(),
         token0Contract.decimals(),
         token1Contract.decimals(),
+        fetchTokenPrices(token0Address, token1Address),
       ]);
 
       // Calculate current price
       const sqrtPriceX96 = slot0.sqrtPriceX96;
-      // Convert decimals to number since they come as bigint from the contract
       const price = calculatePrice(
         sqrtPriceX96,
         Number(token0Decimals),
@@ -164,16 +213,18 @@ const UniswapPoolInfo: React.FC = () => {
           address: token0Address,
           symbol: token0Symbol,
           decimals: Number(token0Decimals),
+          usdPrice: token0Price,
         },
         token1: {
           address: token1Address,
           symbol: token1Symbol,
           decimals: Number(token1Decimals),
+          usdPrice: token1Price,
         },
-        fee: Number(fee) / 10000, // Convert fee to number before division
+        fee: Number(fee) / 10000,
         price,
         sqrtPriceX96: sqrtPriceX96.toString(),
-        tick: Number(slot0.tick), // Also convert tick to number for consistency
+        tick: Number(slot0.tick),
       });
     } catch (err: any) {
       console.error('Pool info fetch error:', err);
@@ -229,38 +280,55 @@ const UniswapPoolInfo: React.FC = () => {
               <ResultValue>{poolInfo.fee}%</ResultValue>
             </ResultRow>
             <ResultRow>
+              <ResultLabel>Token0 ({poolInfo.token0.symbol}):</ResultLabel>
+              <ResultValue>
+                <div>
+                  <a 
+                    href={`${CHAIN_CONFIGS[selectedChain].explorerUrl}/token/${poolInfo.token0.address}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {poolInfo.token0.address}
+                  </a>
+                  {poolInfo.token0.usdPrice !== null && (
+                    <div>Price: ${poolInfo.token0.usdPrice.toFixed(4)}</div>
+                  )}
+                </div>
+              </ResultValue>
+            </ResultRow>
+            <ResultRow>
+              <ResultLabel>Token1 ({poolInfo.token1.symbol}):</ResultLabel>
+              <ResultValue>
+                <div>
+                  <a 
+                    href={`${CHAIN_CONFIGS[selectedChain].explorerUrl}/token/${poolInfo.token1.address}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {poolInfo.token1.address}
+                  </a>
+                  {poolInfo.token1.usdPrice !== null && (
+                    <div>Price: ${poolInfo.token1.usdPrice.toFixed(4)}</div>
+                  )}
+                </div>
+              </ResultValue>
+            </ResultRow>
+            <ResultRow>
               <ResultLabel>Current Price:</ResultLabel>
               <ResultValue>
-                1 {poolInfo.token0.symbol} = {poolInfo.price.toFixed(6)} {poolInfo.token1.symbol}
+                <div>
+                  1 {poolInfo.token0.symbol} = {poolInfo.price.toFixed(6)} {poolInfo.token1.symbol}
+                  {poolInfo.token0.usdPrice !== null && poolInfo.token1.usdPrice !== null && (
+                    <div>
+                      (${(poolInfo.token0.usdPrice).toFixed(4)} = ${(poolInfo.token0.usdPrice * poolInfo.price).toFixed(4)})
+                    </div>
+                  )}
+                </div>
               </ResultValue>
             </ResultRow>
             <ResultRow>
               <ResultLabel>Current Tick:</ResultLabel>
               <ResultValue>{poolInfo.tick}</ResultValue>
-            </ResultRow>
-            <ResultRow>
-              <ResultLabel>Token0 Address:</ResultLabel>
-              <ResultValue>
-                <a 
-                  href={`${CHAIN_CONFIGS[selectedChain].explorerUrl}/token/${poolInfo.token0.address}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {poolInfo.token0.address}
-                </a>
-              </ResultValue>
-            </ResultRow>
-            <ResultRow>
-              <ResultLabel>Token1 Address:</ResultLabel>
-              <ResultValue>
-                <a 
-                  href={`${CHAIN_CONFIGS[selectedChain].explorerUrl}/token/${poolInfo.token1.address}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {poolInfo.token1.address}
-                </a>
-              </ResultValue>
             </ResultRow>
           </ResultTable>
         </Result>
