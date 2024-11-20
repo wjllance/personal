@@ -26,16 +26,37 @@ export const ToolsContainer = styled.div`
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+  min-height: 600px; /* Set minimum height for the container */
 `;
 
 export const TabList = styled.div`
   display: flex;
   flex-direction: column;
   min-width: 200px;
+  height: 600px; /* Fixed height for tabs */
   background: white;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  overflow-y: auto; /* Add scroll if there are many tabs */
+
+  /* Customize scrollbar */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+  }
 `;
 
 export const TabButton = styled.button<{ active: boolean }>`
@@ -48,6 +69,7 @@ export const TabButton = styled.button<{ active: boolean }>`
   transition: all 0.3s ease;
   border-left: 4px solid ${props => props.active ? '#2980b9' : 'transparent'};
   font-weight: ${props => props.active ? '600' : '400'};
+  white-space: nowrap; /* Prevent text wrapping */
 
   &:hover {
     background: ${props => props.active ? '#3498db' : '#f8f9fa'};
@@ -60,6 +82,27 @@ export const ToolContent = styled.div`
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  height: 600px; /* Fixed height to match tabs */
+  overflow-y: auto; /* Add scroll for content */
+
+  /* Customize scrollbar */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+  }
 `;
 
 export const Tool = styled.div`
