@@ -36,155 +36,176 @@ const shimmer = keyframes`
 
 const Container = styled.div`
   width: 100%;
-  max-width: 600px;
+  max-width: 1200px;
   margin: 0 auto;
-  background: rgba(10, 25, 47, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  padding: 1.5rem;
-  border: 1px solid rgba(100, 255, 218, 0.1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-`;
-
-const Title = styled.h3`
-  color: #64ffda;
-  font-size: 1.1rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
-  position: relative;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  padding: 24px;
   
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 2px;
-    background: linear-gradient(90deg, rgba(100, 255, 218, 0), rgba(100, 255, 218, 0.8), rgba(100, 255, 218, 0));
+  @media (max-width: 768px) {
+    padding: 16px;
   }
 `;
 
 const AssetColumns = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
   
-  @media (max-width: 480px) {
+  @media (max-width: 1024px) {
+    gap: 16px;
+  }
+  
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 16px;
   }
 `;
 
 const AssetList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  background: rgba(13, 17, 28, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  
+  @media (max-width: 768px) {
+    border-radius: 12px;
+  }
 `;
 
 const AssetItem = styled.div`
-  display: grid;
-  grid-template-columns: 24px 1fr auto;
-  gap: 0.75rem;
+  display: flex;
   align-items: center;
-  padding: 0.6rem 0.8rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  padding: 16px;
   position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, 
-      rgba(100, 255, 218, 0) 0%,
-      rgba(100, 255, 218, 0.03) 50%,
-      rgba(100, 255, 218, 0) 100%
-    );
-    opacity: 0;
-    transition: opacity 0.3s ease;
+  transition: all 0.3s ease;
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 8px;
+
+  @media (max-width: 480px) {
+    padding: 12px;
+    flex-wrap: wrap;
   }
-  
+
   &:hover {
-    transform: translateX(4px);
     background: rgba(255, 255, 255, 0.03);
-    
-    &::before {
-      opacity: 1;
-      animation: ${shimmer} 2s infinite linear;
+    transform: translateX(4px);
+
+    @media (max-width: 768px) {
+      transform: none;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: linear-gradient(180deg, #64ffda 0%, rgba(100, 255, 218, 0) 100%);
     }
   }
-`;
 
-const Rank = styled.div`
-  color: #64ffda;
-  font-size: 0.85rem;
-  font-weight: 600;
-  opacity: 0.9;
-  font-family: 'Monaco', monospace;
+  &:last-child {
+    border-bottom: none;
+  }
 `;
 
 const AssetInfo = styled.div`
-  min-width: 0;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 180px;
+  gap: 4px;
+  
+  @media (max-width: 480px) {
+    min-width: 140px;
+    margin-right: auto;
+  }
+`;
+
+const MetricsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    margin-left: auto;
+  }
 `;
 
 const AssetName = styled.div`
   color: #ffffff;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  letter-spacing: 0.3px;
+  
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+  }
 `;
 
 const AssetSymbol = styled.div`
-  color: #8892b0;
-  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
   font-family: 'Monaco', monospace;
-  margin-top: 2px;
-  opacity: 0.8;
+  
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
+  }
+`;
+
+const AssetPrice = styled.div`
+  font-family: 'Monaco', monospace;
+  font-size: 0.95rem;
+  color: #ffffff;
+  text-align: right;
+  min-width: 120px;
+  letter-spacing: 0.5px;
+  
+  @media (max-width: 768px) {
+    min-width: 100px;
+  }
+  
+  @media (max-width: 480px) {
+    min-width: 0;
+  }
+  
+  &::before {
+    content: '$';
+    color: rgba(255, 255, 255, 0.5);
+    margin-right: 2px;
+  }
 `;
 
 const MarketCap = styled.div`
-  color: #ffffff;
-  font-size: 0.85rem;
-  text-align: right;
   font-family: 'Monaco', monospace;
-  position: relative;
-  padding: 4px 8px;
-  border-radius: 4px;
-  background: rgba(100, 255, 218, 0.05);
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: right;
+  min-width: 130px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
   
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 4px;
-    border: 1px solid rgba(100, 255, 218, 0.1);
-    transition: all 0.3s ease;
+  @media (max-width: 768px) {
+    min-width: 110px;
+    font-size: 0.85rem;
   }
   
-  ${AssetItem}:hover & {
-    &::before {
-      border-color: rgba(100, 255, 218, 0.2);
-    }
+  @media (max-width: 480px) {
+    min-width: 0;
   }
-`;
-
-const PriceChange = styled.span<{ isPositive: boolean }>`
-  color: ${props => props.isPositive ? '#00ff9d' : '#ff4d4d'};
-  font-size: 0.75rem;
-  margin-left: 8px;
 `;
 
 const LoadingOverlay = styled.div`
@@ -202,17 +223,58 @@ const LoadingOverlay = styled.div`
   z-index: 10;
 `;
 
-const LoadingSpinner = styled.div`
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(100, 255, 218, 0.1);
-  border-top-color: #64ffda;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+const PriceChange = styled.span<{ isPositive: boolean }>`
+  color: ${props => props.isPositive ? '#00ff9d' : '#ff4d4d'};
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: ${props => props.isPositive ? 'rgba(0, 255, 157, 0.1)' : 'rgba(255, 77, 77, 0.1)'};
+  white-space: nowrap;
+  
+  @media (max-width: 480px) {
+    font-size: 0.7rem;
+    padding: 2px 4px;
+  }
+  
+  &::before {
+    content: '${props => props.isPositive ? '↑' : '↓'}';
+    margin-right: 2px;
+  }
+`;
 
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
+const Title = styled.h3`
+  color: #64ffda;
+  font-size: 1.5rem;
+  margin-bottom: 24px;
+  text-align: center;
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+  }
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(100, 255, 218, 0), rgba(100, 255, 218, 0.8), rgba(100, 255, 218, 0));
+    
+    @media (max-width: 480px) {
+      width: 40px;
+      bottom: -6px;
     }
   }
 `;
@@ -318,7 +380,7 @@ const TopAssets: React.FC = () => {
 
   // Fetch stock data using FMP API
   const fetchStockData = async () => {
-    const symbols = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'BRK.B', 'META','TSM', '2222.SR'];
+    const symbols = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'TSLA', 'BRK.B', 'META','TSM', '2222.SR'];
     try {
       const response = await axios.get(`${API_ENDPOINTS.FMP}/quote/${symbols.join(',')}`, {
         params: {
@@ -496,7 +558,7 @@ const TopAssets: React.FC = () => {
 
   const formatPrice = (price: number) => {
     if(!price) return '-';
-    return `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
   const formatPriceChange = (change: number) => {
@@ -513,9 +575,7 @@ const TopAssets: React.FC = () => {
   return (
     <Container>
       {loading && (
-        <LoadingOverlay>
-          <LoadingSpinner />
-        </LoadingOverlay>
+        <LoadingOverlay />
       )}
       <Title>Top Market Assets</Title>
       {error ? (
@@ -524,8 +584,7 @@ const TopAssets: React.FC = () => {
         <AssetColumns>
           <AssetList>
             {leftColumn.map((asset, index) => (
-              <AssetItem key={index}>
-                <Rank>#{index + 1}</Rank>
+              <AssetItem key={asset.symbol}>
                 <AssetInfo>
                   <AssetName>{asset.name}</AssetName>
                   <AssetSymbol>
@@ -535,17 +594,16 @@ const TopAssets: React.FC = () => {
                     </PriceChange>
                   </AssetSymbol>
                 </AssetInfo>
-                <AssetInfo>
-                  <AssetName>{formatPrice(asset.price)}</AssetName>
-                </AssetInfo>
-                <MarketCap>{formatMarketCap(asset.marketCap)}</MarketCap>
+                <MetricsContainer>
+                  <AssetPrice>{formatPrice(asset.price)}</AssetPrice>
+                  <MarketCap>{formatMarketCap(asset.marketCap)}</MarketCap>
+                </MetricsContainer>
               </AssetItem>
             ))}
           </AssetList>
           <AssetList>
             {rightColumn.map((asset, index) => (
-              <AssetItem key={index}>
-                <Rank>#{index + 6}</Rank>
+              <AssetItem key={asset.symbol}>
                 <AssetInfo>
                   <AssetName>{asset.name}</AssetName>
                   <AssetSymbol>
@@ -555,10 +613,10 @@ const TopAssets: React.FC = () => {
                     </PriceChange>
                   </AssetSymbol>
                 </AssetInfo>
-                <AssetInfo>
-                  <AssetName>{formatPrice(asset.price)}</AssetName>
-                </AssetInfo>
-                <MarketCap>{formatMarketCap(asset.marketCap)}</MarketCap>
+                <MetricsContainer>
+                  <AssetPrice>{formatPrice(asset.price)}</AssetPrice>
+                  <MarketCap>{formatMarketCap(asset.marketCap)}</MarketCap>
+                </MetricsContainer>
               </AssetItem>
             ))}
           </AssetList>
