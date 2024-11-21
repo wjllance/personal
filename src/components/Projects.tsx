@@ -4,21 +4,33 @@ import { motion } from 'framer-motion';
 import { FaGithub } from 'react-icons/fa';
 
 const ProjectsSection = styled.section`
-  min-height: 100vh;
+  width: 100%;
   padding: 100px 20px;
   background: #ffffff;
+
+  @media (max-width: 768px) {
+    padding: 60px 16px;
+  }
 `;
 
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
+  
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
 `;
 
 const SectionTitle = styled(motion.h2)`
-  font-size: 2.5rem;
+  font-size: clamp(2rem, 5vw, 2.5rem);
   text-align: center;
   margin-bottom: 3rem;
   color: #333;
+
+  @media (max-width: 768px) {
+    margin-bottom: 2rem;
+  }
 `;
 
 const ProjectsGrid = styled.div`
@@ -26,17 +38,30 @@ const ProjectsGrid = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   padding: 20px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 10px;
+  }
 `;
 
 const ProjectCard = styled(motion.div)`
   background: white;
-  border-radius: 10px;
+  border-radius: 15px;
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 
   &:hover {
     transform: translateY(-5px);
+  }
+
+  @media (max-width: 768px) {
+    max-width: 100%;
   }
 `;
 
@@ -44,14 +69,25 @@ const ProjectImage = styled.img`
   width: 100%;
   height: 200px;
   object-fit: cover;
+
+  @media (max-width: 768px) {
+    height: 180px;
+  }
 `;
 
 const ProjectContent = styled.div`
   padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 768px) {
+    padding: 1.25rem;
+  }
 `;
 
 const ProjectTitle = styled.h3`
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
   margin-bottom: 1rem;
   color: #333;
 `;
@@ -60,6 +96,8 @@ const ProjectDescription = styled.p`
   color: #666;
   margin-bottom: 1rem;
   line-height: 1.6;
+  flex: 1;
+  font-size: clamp(0.9rem, 2vw, 1rem);
 `;
 
 const TagsContainer = styled.div`

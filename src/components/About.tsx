@@ -10,10 +10,10 @@ const AboutContainer = styled.div`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 80px 20px;
 
-  @media (max-width: 968px) {
-    padding: 0;
+  @media (max-width: 768px) {
+    padding: 60px 16px;
   }
 `;
 
@@ -23,13 +23,9 @@ const Content = styled.div`
   gap: 60px;
   align-items: start;
 
-  @media (max-width: 968px) {
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
     gap: 40px;
-  }
-
-  @media (max-width: 480px) {
-    gap: 32px;
   }
 `;
 
@@ -38,41 +34,33 @@ const AboutText = styled.div`
   flex-direction: column;
   gap: 24px;
 
-  @media (max-width: 968px) {
+  @media (max-width: 768px) {
     text-align: center;
     align-items: center;
+    gap: 20px;
   }
 `;
 
 const Title = styled(motion.h2)`
-  font-size: 2.5rem;
+  font-size: clamp(2rem, 5vw, 2.5rem);
   color: #64ffda;
   margin-bottom: 20px;
 
-  @media (max-width: 968px) {
-    font-size: 2.2rem;
+  @media (max-width: 768px) {
     margin-bottom: 16px;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 1.8rem;
   }
 `;
 
 const Description = styled(motion.p)`
-  font-size: 1.1rem;
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
   color: #8892b0;
   line-height: 1.8;
   margin: 0;
+  max-width: 600px;
 
-  @media (max-width: 968px) {
-    font-size: 1rem;
-    max-width: 600px;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 0.95rem;
+  @media (max-width: 768px) {
     line-height: 1.7;
+    max-width: 100%;
   }
 `;
 
@@ -83,65 +71,50 @@ const SkillsContainer = styled(motion.div)`
   padding: 30px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  height: 100%;
 
-  @media (max-width: 968px) {
+  @media (max-width: 768px) {
     padding: 24px;
-  }
-
-  @media (max-width: 480px) {
-    padding: 20px;
+    margin: 0 auto;
+    max-width: 500px;
   }
 `;
 
 const SkillsTitle = styled.h3`
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
   color: #64ffda;
   margin-bottom: 20px;
-
-  @media (max-width: 968px) {
-    text-align: center;
-    font-size: 1.3rem;
-  }
+  text-align: center;
 `;
 
-const SkillsGrid = styled.div`
+const SkillsList = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
 
-  @media (max-width: 968px) {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
-
-  @media (max-width: 480px) {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px;
-  }
 `;
 
-const SkillBadge = styled(motion.div)`
-  background: rgba(100, 255, 218, 0.1);
-  color: #64ffda;
-  padding: 10px 15px;
-  border-radius: 8px;
-  font-size: 0.9rem;
+const SkillItem = styled(motion.div)`
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  color: #8892b0;
   text-align: center;
-  border: 1px solid rgba(100, 255, 218, 0.2);
   transition: all 0.3s ease;
 
-  @media (max-width: 968px) {
-    padding: 8px 12px;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 0.85rem;
-    padding: 8px 10px;
-  }
-
   &:hover {
-    background: rgba(100, 255, 218, 0.2);
     transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  @media (max-width: 768px) {
+    padding: 10px 14px;
   }
 `;
 
@@ -192,9 +165,9 @@ const About: React.FC<AboutProps> = ({ id }) => {
           viewport={{ once: true }}
         >
           <SkillsTitle>Technologies & Skills</SkillsTitle>
-          <SkillsGrid>
+          <SkillsList>
             {skills.map((skill, index) => (
-              <SkillBadge
+              <SkillItem
                 key={skill}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -202,9 +175,9 @@ const About: React.FC<AboutProps> = ({ id }) => {
                 viewport={{ once: true }}
               >
                 {skill}
-              </SkillBadge>
+              </SkillItem>
             ))}
-          </SkillsGrid>
+          </SkillsList>
         </SkillsContainer>
       </Content>
     </AboutContainer>

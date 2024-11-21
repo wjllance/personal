@@ -11,10 +11,10 @@ const ContactContainer = styled.div`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 80px 20px;
 
-  @media (max-width: 968px) {
-    padding: 0;
+  @media (max-width: 768px) {
+    padding: 60px 16px;
   }
 `;
 
@@ -24,13 +24,9 @@ const Content = styled.div`
   gap: 60px;
   align-items: start;
 
-  @media (max-width: 968px) {
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
     gap: 40px;
-  }
-
-  @media (max-width: 480px) {
-    gap: 32px;
   }
 `;
 
@@ -39,41 +35,34 @@ const ContactInfo = styled.div`
   flex-direction: column;
   gap: 24px;
 
-  @media (max-width: 968px) {
+  @media (max-width: 768px) {
     text-align: center;
     align-items: center;
+    gap: 20px;
   }
 `;
 
 const Title = styled(motion.h2)`
-  font-size: 2.5rem;
+  font-size: clamp(2rem, 5vw, 2.5rem);
   color: #64ffda;
   margin-bottom: 20px;
 
-  @media (max-width: 968px) {
-    font-size: 2.2rem;
+  @media (max-width: 768px) {
     margin-bottom: 16px;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 1.8rem;
   }
 `;
 
 const Description = styled(motion.p)`
-  font-size: 1.1rem;
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
   color: #8892b0;
   line-height: 1.8;
   margin: 0;
+  max-width: 540px;
 
-  @media (max-width: 968px) {
-    font-size: 1rem;
-    max-width: 600px;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 0.95rem;
+  @media (max-width: 768px) {
     line-height: 1.7;
+    max-width: 100%;
+    padding: 0 16px;
   }
 `;
 
@@ -85,139 +74,123 @@ const ContactForm = styled(motion.form)`
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 
-  @media (max-width: 968px) {
+  @media (max-width: 768px) {
     padding: 24px;
-  }
-
-  @media (max-width: 480px) {
-    padding: 20px;
+    margin: 0 auto;
+    max-width: 500px;
   }
 `;
 
 const FormGroup = styled.div`
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 
-  @media (max-width: 480px) {
-    margin-bottom: 16px;
+  @media (max-width: 768px) {
+    margin-bottom: 20px;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
   }
 `;
 
 const Label = styled.label`
   display: block;
+  font-size: clamp(0.9rem, 2vw, 1rem);
   color: #64ffda;
   margin-bottom: 8px;
-  font-size: 0.9rem;
-
-  @media (max-width: 480px) {
-    font-size: 0.85rem;
-    margin-bottom: 6px;
-  }
 `;
 
 const Input = styled.input`
   width: 100%;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(100, 255, 218, 0.2);
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   color: #ffffff;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2vw, 1rem);
   transition: all 0.3s ease;
-
-  @media (max-width: 480px) {
-    padding: 10px;
-    font-size: 0.95rem;
-  }
 
   &:focus {
     outline: none;
     border-color: #64ffda;
-    box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  @media (max-width: 768px) {
+    padding: 10px 14px;
   }
 `;
 
 const TextArea = styled.textarea`
   width: 100%;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(100, 255, 218, 0.2);
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   color: #ffffff;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2vw, 1rem);
   min-height: 150px;
   resize: vertical;
   transition: all 0.3s ease;
 
-  @media (max-width: 968px) {
-    min-height: 120px;
-  }
-
-  @media (max-width: 480px) {
-    padding: 10px;
-    font-size: 0.95rem;
-    min-height: 100px;
-  }
-
   &:focus {
     outline: none;
     border-color: #64ffda;
-    box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  @media (max-width: 768px) {
+    padding: 10px 14px;
+    min-height: 120px;
   }
 `;
 
 const SubmitButton = styled(motion.button)`
-  background: rgba(100, 255, 218, 0.1);
-  color: #64ffda;
-  border: 1px solid rgba(100, 255, 218, 0.2);
+  background: #64ffda;
+  color: #0a192f;
   padding: 12px 24px;
+  border: none;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   width: 100%;
 
-  @media (max-width: 480px) {
-    padding: 10px 20px;
-    font-size: 0.95rem;
-  }
-
   &:hover {
-    background: rgba(100, 255, 218, 0.2);
     transform: translateY(-2px);
+    background: #73ffde;
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.7;
     cursor: not-allowed;
+    transform: none;
+  }
+
+  @media (max-width: 768px) {
+    padding: 10px 20px;
   }
 `;
 
 const SocialLinks = styled(motion.div)`
   display: flex;
   gap: 20px;
-  margin-top: 30px;
+  margin-top: 24px;
 
-  @media (max-width: 968px) {
+  @media (max-width: 768px) {
     justify-content: center;
     gap: 24px;
-  }
-
-  @media (max-width: 480px) {
-    gap: 20px;
   }
 `;
 
 const SocialLink = styled.a`
   color: #64ffda;
-  font-size: 1.5rem;
+  font-size: clamp(1.3rem, 3vw, 1.5rem);
   transition: all 0.3s ease;
 
-  @media (max-width: 480px) {
-    font-size: 1.3rem;
-  }
-
   &:hover {
-    color: #ffffff;
+    color: #73ffde;
     transform: translateY(-2px);
   }
 `;

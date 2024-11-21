@@ -16,13 +16,9 @@ const HeroContainer = styled.section`
   justify-content: center;
   padding: 120px 20px 60px;
   
-  @media (max-width: 968px) {
-    padding: 100px 16px 40px;
-    min-height: auto;
-  }
-
-  @media (max-width: 480px) {
-    padding: 80px 16px 32px;
+  @media (max-width: 768px) {
+    padding: 80px 16px 40px;
+    min-height: calc(100vh - 60px);
   }
 `;
 
@@ -33,11 +29,12 @@ const HeroContent = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 40px;
-  align-items: start;
+  align-items: center;
 
-  @media (max-width: 968px) {
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 24px;
+    text-align: center;
   }
 `;
 
@@ -47,39 +44,48 @@ const TextContent = styled(motion.div)`
   gap: 24px;
   padding: 20px 0;
 
-  @media (max-width: 968px) {
-    text-align: center;
-    align-items: center;
-    order: 2;
+  @media (max-width: 768px) {
     padding: 0;
+    align-items: center;
+    gap: 16px;
   }
 `;
 
 const Title = styled(motion.h1)`
-  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 700;
   color: #64ffda;
   margin: 0;
   line-height: 1.2;
+  
+  @media (max-width: 768px) {
+    font-size: clamp(1.8rem, 6vw, 2.5rem);
+  }
 `;
 
 const Subtitle = styled(motion.h2)`
-  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
   font-weight: 500;
   color: #8892b0;
   margin: 0;
   line-height: 1.5;
+  
+  @media (max-width: 768px) {
+    font-size: clamp(0.9rem, 4vw, 1.2rem);
+  }
 `;
 
 const Description = styled(motion.p)`
-  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
   color: #8892b0;
   line-height: 1.6;
   max-width: 540px;
   margin: 0;
 
-  @media (max-width: 968px) {
+  @media (max-width: 768px) {
+    font-size: 0.95rem;
     max-width: 100%;
+    padding: 0 16px;
   }
 `;
 
@@ -88,7 +94,7 @@ const SocialLinks = styled(motion.div)`
   gap: 20px;
   margin-top: 8px;
 
-  @media (max-width: 968px) {
+  @media (max-width: 768px) {
     justify-content: center;
   }
 `;
@@ -121,7 +127,7 @@ const ChartSection = styled(motion.div)`
     padding: 20px;
   }
 
-  @media (max-width: 968px) {
+  @media (max-width: 768px) {
     order: 1;
     height: 350px;
   }
