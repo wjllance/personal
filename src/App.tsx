@@ -1,11 +1,8 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { createGlobalStyle, styled } from 'styled-components';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
+import { createGlobalStyle } from 'styled-components';
+import Home from './pages/Home';
 import DevTools from './components/DevTools';
-import About from './components/About';
-import Contact from './components/Contact';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -47,79 +44,15 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const AppContainer = styled.div`
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-`;
-
-const MainContent = styled.main`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  z-index: 1;
-  overflow-x: hidden;
-
-  &::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at top right, #1a365d 0%, #0a192f 100%);
-    z-index: -1;
-  }
-`;
-
-const Section = styled.section`
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 100px 20px;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-
-  @media (max-width: 968px) {
-    padding: 100px 16px;
-    min-height: auto;
-  }
-
-  @media (max-width: 480px) {
-    padding: 80px 16px 40px;
-    min-height: auto;
-  }
-`;
-
 const App: React.FC = () => {
   return (
     <>
       <GlobalStyle />
-      <AppContainer>
-        <Routes>
-          <Route path="/" element={
-            <>
-              <Navbar />
-              <MainContent>
-                <Section id="home">
-                  <Hero id="home" />
-                </Section>
-                <Section id="about">
-                  <About id="about" />
-                </Section>
-                <Section id="contact">
-                  <Contact id="contact" />
-                </Section>
-              </MainContent>
-            </>
-          } />
-          <Route path="/devtools" element={<DevTools />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AppContainer>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/devtools" element={<DevTools />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </>
   );
 };
