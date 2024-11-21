@@ -201,26 +201,52 @@ const Navbar: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
   const location = useLocation();
   const navigate = useNavigate();
+  const scrollTimeout = React.useRef<NodeJS.Timeout | null>(null);
+  const lastScrollTime = React.useRef<number>(0);
+  const lastActiveSection = React.useRef(activeSection);
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'bitcoin', 'about', 'contact'];
-      const current = sections.find(section => {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          return rect.top <= 100 && rect.bottom >= 100;
-        }
-        return false;
-      });
-      if (current) {
-        setActiveSection(current);
-        window.history.replaceState(null, '', `/#${current}`);
+      // Throttle to prevent excessive updates
+      const now = Date.now();
+      if (now - lastScrollTime.current < 150) {
+        return;
       }
+      
+      if (scrollTimeout.current) {
+        return;
+      }
+
+      lastScrollTime.current = now;
+      scrollTimeout.current = setTimeout(() => {
+        const sections = ['home', 'bitcoin', 'about', 'contact'];
+        const current = sections.find(section => {
+          const element = document.getElementById(section);
+          if (element) {
+            const rect = element.getBoundingClientRect();
+            return rect.top <= 100 && rect.bottom >= 100;
+          }
+          return false;
+        });
+
+        if (current && lastActiveSection.current !== current) {
+          setActiveSection(current);
+          lastActiveSection.current = current;
+          // Only update history when section actually changes
+          window.history.replaceState(null, '', `/#${current}`);
+        }
+
+        scrollTimeout.current = null;
+      }, 150);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollTimeout.current) {
+        clearTimeout(scrollTimeout.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
