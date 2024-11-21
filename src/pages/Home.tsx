@@ -63,14 +63,14 @@ const Home: React.FC = () => {
         <Section id="home">
           <Hero id="home" />
         </Section>
+        <Section id="assets" style={{ minHeight: 'auto', paddingTop: '40px', paddingBottom: '40px' }}>
+          <TopAssets />
+        </Section>
         <Section id="about">
           <About id="about" />
         </Section>
         <Section id="projects">
           <Projects id="projects" />
-        </Section>
-        <Section id="assets">
-          <TopAssets />
         </Section>
         <Section id="contact">
           <Contact id="contact" />
