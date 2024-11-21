@@ -46,7 +46,6 @@ const timeframeMap: Record<Timeframe, { days: string }> = {
 const Container = styled.div`
   width: 100%;
   background: rgba(255, 255, 255, 0.05);
-  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 32px;
@@ -54,7 +53,12 @@ const Container = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
+
+  @supports (-webkit-touch-callout: none) {
+    background-color: rgba(18, 18, 18, 0.7);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
 
   @media (max-width: 968px) {
     padding: 24px;
@@ -75,10 +79,14 @@ const ChartHeader = styled.div`
   flex-direction: column;
   gap: 20px;
   margin-bottom: 28px;
+  width: 100%;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 
   @media (max-width: 968px) {
     gap: 16px;
     margin-bottom: 24px;
+    align-items: stretch;
   }
 
   @media (max-width: 480px) {
@@ -92,11 +100,17 @@ const HeaderTop = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   gap: 24px;
+  width: 100%;
+  flex-wrap: wrap;
 
   @media (max-width: 968px) {
     flex-direction: column;
     align-items: center;
     gap: 16px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 12px;
   }
 `;
 
@@ -108,9 +122,18 @@ const TitleGroup = styled.div`
   background: rgba(255, 255, 255, 0.03);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  transform: translateZ(0);
+
+  @supports (-webkit-touch-callout: none) {
+    background-color: rgba(18, 18, 18, 0.7);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
 
   @media (max-width: 968px) {
     padding: 6px 12px;
+    width: 100%;
+    justify-content: center;
   }
 
   @media (max-width: 480px) {
@@ -162,17 +185,22 @@ const PriceDisplay = styled(motion.div)`
   padding: 12px 16px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  min-width: 200px;
+  transform: translateZ(0);
+
+  @supports (-webkit-touch-callout: none) {
+    background-color: rgba(18, 18, 18, 0.7);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
 
   @media (max-width: 968px) {
     align-items: center;
     padding: 10px 14px;
-    min-width: 180px;
+    width: 100%;
   }
 
   @media (max-width: 480px) {
     padding: 8px 12px;
-    min-width: 160px;
   }
 `;
 
@@ -214,6 +242,15 @@ const TimeframeContainer = styled.div`
   background: rgba(255, 255, 255, 0.03);
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  width: 100%;
+  justify-content: flex-start;
+  transform: translateZ(0);
+
+  @supports (-webkit-touch-callout: none) {
+    background-color: rgba(18, 18, 18, 0.7);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
 
   @media (max-width: 968px) {
     justify-content: center;
@@ -255,7 +292,6 @@ const TimeframeButton = styled.button<{ active: boolean }>`
 
 const ChartContainer = styled(motion.div)`
   background: rgba(255, 255, 255, 0.03);
-  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-radius: 16px;
   padding: 24px;
@@ -265,7 +301,12 @@ const ChartContainer = styled(motion.div)`
   width: 100%;
   overflow: hidden;
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
+
+  @supports (-webkit-touch-callout: none) {
+    background-color: rgba(18, 18, 18, 0.7);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
 
   canvas {
     width: 100% !important;
