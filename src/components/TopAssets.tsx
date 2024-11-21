@@ -1,10 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
+import axios from 'axios';
+
+// API Configuration
+const API_KEYS = {
+  ALPHA_VANTAGE: process.env.REACT_APP_ALPHA_VANTAGE_API_KEY || 'your_alpha_vantage_key',
+  FMP: process.env.REACT_APP_FMP_API_KEY || 'your_fmp_key'
+};
+
+const API_ENDPOINTS = {
+  COINGECKO: 'https://api.coingecko.com/api/v3',
+  ALPHA_VANTAGE: 'https://www.alphavantage.co/query',
+  FMP: 'https://financialmodelingprep.com/api/v3'
+};
 
 interface Asset {
   name: string;
   marketCap: number;
   symbol: string;
+  priceChange24h?: number;
+  type?: 'crypto' | 'stock' | 'commodity';
 }
 
 const shimmer = keyframes`
@@ -163,19 +178,254 @@ const MarketCap = styled.div`
   }
 `;
 
+const PriceChange = styled.span<{ isPositive: boolean }>`
+  color: ${props => props.isPositive ? '#00ff9d' : '#ff4d4d'};
+  font-size: 0.75rem;
+  margin-left: 8px;
+`;
+
+const LoadingOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 25, 47, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  border-radius: 12px;
+  z-index: 10;
+`;
+
+const LoadingSpinner = styled.div`
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(100, 255, 218, 0.1);
+  border-top-color: #64ffda;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
+// Cache configuration
+const CACHE_CONFIG = {
+  KEY: 'topAssetsCache',
+  TTL: 5 * 60 * 1000, // 5 minutes in milliseconds
+};
+
+interface CacheData {
+  timestamp: number;
+  data: Asset[];
+}
+
+// Cache utilities
+const getCache = (): CacheData | null => {
+  try {
+    const cached = localStorage.getItem(CACHE_CONFIG.KEY);
+    if (!cached) return null;
+    
+    const parsedCache = JSON.parse(cached) as CacheData;
+    const now = Date.now();
+    
+    // Check if cache is expired
+    if (now - parsedCache.timestamp > CACHE_CONFIG.TTL) {
+      localStorage.removeItem(CACHE_CONFIG.KEY);
+      return null;
+    }
+    
+    return parsedCache;
+  } catch (error) {
+    console.error('Error reading cache:', error);
+    return null;
+  }
+};
+
+const setCache = (data: Asset[]) => {
+  try {
+    const cacheData: CacheData = {
+      timestamp: Date.now(),
+      data,
+    };
+    localStorage.setItem(CACHE_CONFIG.KEY, JSON.stringify(cacheData));
+  } catch (error) {
+    console.error('Error setting cache:', error);
+  }
+};
+
 const TopAssets: React.FC = () => {
-  const [assets] = useState<Asset[]>([
-    { name: "Gold", marketCap: 13.557e12, symbol: "XAU" },
-    { name: "Apple Inc.", marketCap: 2.533e12, symbol: "AAPL" },
-    { name: "Microsoft", marketCap: 2.11e12, symbol: "MSFT" },
-    { name: "Saudi Aramco", marketCap: 1.926e12, symbol: "2222.SR" },
-    { name: "Silver", marketCap: 1.456e12, symbol: "XAG" },
-    { name: "Alphabet", marketCap: 1.343e12, symbol: "GOOGL" },
-    { name: "Amazon", marketCap: 1.002e12, symbol: "AMZN" },
-    { name: "Berkshire", marketCap: 693.72e9, symbol: "BRK.A" },
-    { name: "NVIDIA", marketCap: 654.42e9, symbol: "NVDA" },
-    { name: "Bitcoin", marketCap: 586.44e9, symbol: "BTC" }
-  ]);
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch cryptocurrency data from CoinGecko
+  const fetchCryptoData = async () => {
+    try {
+      const response = await axios.get(
+        `${API_ENDPOINTS.COINGECKO}/coins/markets`,
+        {
+          params: {
+            vs_currency: 'usd',
+            order: 'market_cap_desc',
+            per_page: 3,
+            page: 1,
+            sparkline: false
+          }
+        }
+      );
+
+      return response.data.map((coin: any) => ({
+        name: coin.name,
+        symbol: coin.symbol.toUpperCase(),
+        marketCap: coin.market_cap,
+        priceChange24h: coin.price_change_percentage_24h,
+        type: 'crypto' as const
+      }));
+    } catch (error) {
+      console.error('Error fetching crypto data:', error);
+      return [];
+    }
+  };
+
+  // Fetch stock data using Financial Modeling Prep
+  const fetchStockDataFMP = async () => {
+    try {
+      const symbols = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', '2222.SR'];
+      const response = await axios.get(
+        `${API_ENDPOINTS.FMP}/quote/${symbols.join(',')}`,
+        {
+          params: {
+            apikey: API_KEYS.FMP
+          }
+        }
+      );
+
+      return response.data.map((stock: any) => ({
+        name: stock.name,
+        symbol: stock.symbol,
+        marketCap: stock.marketCap,
+        priceChange24h: stock.changesPercentage,
+        type: 'stock' as const
+      }));
+    } catch (error) {
+      console.error('Error fetching stock data:', error);
+      return [];
+    }
+  };
+
+  // Fetch stock data using Alpha Vantage
+  const fetchStockDataAV = async (symbol: string) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.ALPHA_VANTAGE, {
+        params: {
+          function: 'GLOBAL_QUOTE',
+          symbol,
+          apikey: API_KEYS.ALPHA_VANTAGE
+        }
+      });
+
+      const quote = response.data['Global Quote'];
+      return {
+        name: symbol,
+        symbol: symbol,
+        marketCap: parseFloat(quote['05. price']) * parseFloat(quote['06. volume']),
+        priceChange24h: parseFloat(quote['10. change percent'].replace('%', '')),
+        type: 'stock' as const
+      };
+    } catch (error) {
+      console.error(`Error fetching stock data for ${symbol}:`, error);
+      return null;
+    }
+  };
+
+  // Fetch commodity data (Gold & Silver) using Alpha Vantage
+  const fetchCommodityData = async () => {
+    try {
+      const commodities = [
+        { symbol: 'XAU', name: 'Gold' },
+        { symbol: 'XAG', name: 'Silver' }
+      ];
+
+      const responses = await Promise.all(
+        commodities.map(async (commodity) => {
+          const response = await axios.get(API_ENDPOINTS.ALPHA_VANTAGE, {
+            params: {
+              function: 'CURRENCY_EXCHANGE_RATE',
+              from_currency: commodity.symbol,
+              to_currency: 'USD',
+              apikey: API_KEYS.ALPHA_VANTAGE
+            }
+          });
+
+          const data = response.data['Realtime Currency Exchange Rate'];
+          return {
+            name: commodity.name,
+            symbol: commodity.symbol,
+            marketCap: parseFloat(data['5. Exchange Rate']) * 1e12, // Approximate market cap
+            priceChange24h: 0, // Alpha Vantage doesn't provide 24h change for commodities
+            type: 'commodity' as const
+          };
+        })
+      );
+
+      return responses;
+    } catch (error) {
+      console.error('Error fetching commodity data:', error);
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    const fetchAllData = async () => {
+      try {
+        // Check cache first
+        const cachedData = getCache();
+        if (cachedData) {
+          setAssets(cachedData.data);
+          setLoading(false);
+          setError(null);
+          return;
+        }
+
+        setLoading(true);
+
+        // Fetch data from all sources
+        const [cryptoAssets, stockAssets, commodityAssets] = await Promise.all([
+          fetchCryptoData(),
+          fetchStockDataFMP(), // or fetchStockDataAV() if using Alpha Vantage
+          fetchCommodityData()
+        ]);
+
+        // Combine and sort all assets by market cap
+        const allAssets = [...cryptoAssets, ...stockAssets, ...commodityAssets]
+          .filter(asset => asset !== null)
+          .sort((a, b) => b.marketCap - a.marketCap)
+          .slice(0, 10);
+
+        setAssets(allAssets);
+        // Cache the fetched data
+        setCache(allAssets);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('Failed to fetch market data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAllData();
+    
+    // Refresh data every 5 minutes
+    const interval = setInterval(fetchAllData, CACHE_CONFIG.TTL);
+    return () => clearInterval(interval);
+  }, []);
 
   const formatMarketCap = (marketCap: number) => {
     if (marketCap >= 1e12) {
@@ -184,6 +434,11 @@ const TopAssets: React.FC = () => {
       return `$${(marketCap / 1e9).toFixed(1)}B`;
     }
     return `$${(marketCap / 1e6).toFixed(1)}M`;
+  };
+
+  const formatPriceChange = (change: number | undefined) => {
+    if (change === undefined) return null;
+    return `${change >= 0 ? '+' : ''}${change.toFixed(1)}%`;
   };
 
   const splitIntoColumns = (items: Asset[]) => {
@@ -195,33 +450,56 @@ const TopAssets: React.FC = () => {
 
   return (
     <Container>
+      {loading && (
+        <LoadingOverlay>
+          <LoadingSpinner />
+        </LoadingOverlay>
+      )}
       <Title>Top Market Assets</Title>
-      <AssetColumns>
-        <AssetList>
-          {leftColumn.map((asset, index) => (
-            <AssetItem key={index}>
-              <Rank>#{index + 1}</Rank>
-              <AssetInfo>
-                <AssetName>{asset.name}</AssetName>
-                <AssetSymbol>{asset.symbol}</AssetSymbol>
-              </AssetInfo>
-              <MarketCap>{formatMarketCap(asset.marketCap)}</MarketCap>
-            </AssetItem>
-          ))}
-        </AssetList>
-        <AssetList>
-          {rightColumn.map((asset, index) => (
-            <AssetItem key={index}>
-              <Rank>#{index + 6}</Rank>
-              <AssetInfo>
-                <AssetName>{asset.name}</AssetName>
-                <AssetSymbol>{asset.symbol}</AssetSymbol>
-              </AssetInfo>
-              <MarketCap>{formatMarketCap(asset.marketCap)}</MarketCap>
-            </AssetItem>
-          ))}
-        </AssetList>
-      </AssetColumns>
+      {error ? (
+        <div style={{ color: '#ff4d4d', textAlign: 'center' }}>{error}</div>
+      ) : (
+        <AssetColumns>
+          <AssetList>
+            {leftColumn.map((asset, index) => (
+              <AssetItem key={index}>
+                <Rank>#{index + 1}</Rank>
+                <AssetInfo>
+                  <AssetName>{asset.name}</AssetName>
+                  <AssetSymbol>
+                    {asset.symbol}
+                    {asset.priceChange24h !== undefined && (
+                      <PriceChange isPositive={asset.priceChange24h >= 0}>
+                        {formatPriceChange(asset.priceChange24h)}
+                      </PriceChange>
+                    )}
+                  </AssetSymbol>
+                </AssetInfo>
+                <MarketCap>{formatMarketCap(asset.marketCap)}</MarketCap>
+              </AssetItem>
+            ))}
+          </AssetList>
+          <AssetList>
+            {rightColumn.map((asset, index) => (
+              <AssetItem key={index}>
+                <Rank>#{index + 6}</Rank>
+                <AssetInfo>
+                  <AssetName>{asset.name}</AssetName>
+                  <AssetSymbol>
+                    {asset.symbol}
+                    {asset.priceChange24h !== undefined && (
+                      <PriceChange isPositive={asset.priceChange24h >= 0}>
+                        {formatPriceChange(asset.priceChange24h)}
+                      </PriceChange>
+                    )}
+                  </AssetSymbol>
+                </AssetInfo>
+                <MarketCap>{formatMarketCap(asset.marketCap)}</MarketCap>
+              </AssetItem>
+            ))}
+          </AssetList>
+        </AssetColumns>
+      )}
     </Container>
   );
 };
