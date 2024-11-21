@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import {
@@ -259,6 +259,13 @@ const ChartContainer = styled(motion.div)`
   border: 1px solid rgba(255, 255, 255, 0.1);
   height: 400px;
   position: relative;
+  width: 100%;
+  overflow: hidden;
+
+  canvas {
+    width: 100% !important;
+    max-width: 100%;
+  }
 
   @media (max-width: 968px) {
     padding: 20px;
@@ -268,6 +275,8 @@ const ChartContainer = styled(motion.div)`
   @media (max-width: 480px) {
     padding: 16px;
     height: 300px;
+    margin: 0 -12px;
+    width: calc(100% + 24px);
   }
 `;
 
@@ -345,6 +354,7 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
   const [priceChange, setPriceChange] = useState<{ value: number; percentage: number } | null>(null);
   const [currentPrice, setCurrentPrice] = useState<number | null>(null);
   const [abortController, setAbortController] = useState<AbortController | null>(null);
+  const retryTimeoutRef = useRef<NodeJS.Timeout>();
 
   const fetchPriceData = async () => {
     if (abortController) {
@@ -355,80 +365,84 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
 
     setLoading(true);
     setError(null);
-    let retries = 3;
 
-    while (retries > 0) {
-      try {
-        const response = await fetch(
-          `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=${
-            timeframeMap[timeframe].days
-          }`,
-          { signal: newController.signal }
-        );
+    try {
+      const response = await fetch(
+        `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=${
+          timeframeMap[timeframe].days
+        }`,
+        { signal: newController.signal }
+      );
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch price data');
-        }
-
-        const data: PriceData = await response.json();
-        
-        // Validate data structure
-        if (!data.prices || !Array.isArray(data.prices) || data.prices.length === 0) {
-          throw new Error('Invalid price data received');
-        }
-
-        // Set current price
-        const latestPrice = data.prices[data.prices.length - 1][1];
-        if (typeof latestPrice === 'number' && !isNaN(latestPrice)) {
-          setCurrentPrice(latestPrice);
-        }
-        
-        // Calculate price change
-        if (data.prices.length >= 2) {
-          const startPrice = data.prices[0][1];
-          const endPrice = data.prices[data.prices.length - 1][1];
-          
-          if (typeof startPrice === 'number' && typeof endPrice === 'number' && 
-              !isNaN(startPrice) && !isNaN(endPrice) && startPrice !== 0) {
-            const change = endPrice - startPrice;
-            const changePercentage = (change / startPrice) * 100;
-            
-            setPriceChange({
-              value: change,
-              percentage: changePercentage
-            });
-          }
-        }
-
-        setPriceData(data);
-        setLoading(false);
-        setRetryCount(0);
-        return;
-      } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') {
-          return;
-        }
-        retries--;
-        if (retries === 0) {
-          setError('Failed to fetch Bitcoin price data. Please try again.');
-          setLoading(false);
-          throw error;
-        }
-        await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!response.ok) {
+        throw new Error('Failed to fetch price data');
       }
+
+      const data: PriceData = await response.json();
+      
+      // Validate data structure
+      if (!data.prices || !Array.isArray(data.prices) || data.prices.length === 0) {
+        throw new Error('Invalid price data received');
+      }
+
+      // Set current price
+      const latestPrice = data.prices[data.prices.length - 1][1];
+      if (typeof latestPrice === 'number' && !isNaN(latestPrice)) {
+        setCurrentPrice(latestPrice);
+      }
+      
+      // Calculate price change
+      if (data.prices.length >= 2) {
+        const startPrice = data.prices[0][1];
+        const endPrice = data.prices[data.prices.length - 1][1];
+        
+        if (typeof startPrice === 'number' && typeof endPrice === 'number' && 
+            !isNaN(startPrice) && !isNaN(endPrice) && startPrice !== 0) {
+          const change = endPrice - startPrice;
+          const changePercentage = (change / startPrice) * 100;
+          
+          setPriceChange({
+            value: change,
+            percentage: changePercentage
+          });
+        }
+      }
+
+      setPriceData(data);
+      setRetryCount(0);
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        return;
+      }
+      
+      console.error('Error fetching price data:', err);
+      setError('Failed to update price data');
+      
+      // Schedule retry after delay (exponential backoff)
+      const retryDelay = Math.min(1000 * Math.pow(2, retryCount), 30000); // Max 30 seconds
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+      }
+      retryTimeoutRef.current = setTimeout(() => {
+        setRetryCount(prev => prev + 1);
+        fetchPriceData();
+      }, retryDelay);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchPriceData();
     
-    // Update price every 30 seconds
-    const interval = setInterval(() => {
-      fetchPriceData();
-    }, 30000);
-
+    // Set up periodic refresh
+    const refreshInterval = setInterval(fetchPriceData, 60000); // Refresh every minute
+    
     return () => {
-      clearInterval(interval);
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+      }
+      clearInterval(refreshInterval);
       if (abortController) {
         abortController.abort();
       }
