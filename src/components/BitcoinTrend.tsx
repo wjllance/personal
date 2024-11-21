@@ -46,25 +46,27 @@ const timeframeMap: Record<Timeframe, { days: string }> = {
 const Container = styled.div`
   width: 100%;
   background: rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 32px;
   margin-top: 80px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  min-height: 500px;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 
   @media (max-width: 968px) {
     padding: 24px;
     margin-top: 72px;
-    min-height: 600px;
+    padding-bottom: 40px;
   }
 
   @media (max-width: 480px) {
     padding: 20px;
     margin-top: 68px;
     border-radius: 16px;
-    min-height: 650px;
+    padding-bottom: 36px;
   }
 `;
 
@@ -253,6 +255,7 @@ const TimeframeButton = styled.button<{ active: boolean }>`
 
 const ChartContainer = styled(motion.div)`
   background: rgba(255, 255, 255, 0.03);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-radius: 16px;
   padding: 24px;
@@ -261,9 +264,12 @@ const ChartContainer = styled(motion.div)`
   position: relative;
   width: 100%;
   overflow: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 
   canvas {
     width: 100% !important;
+    height: 100% !important;
     max-width: 100%;
   }
 
@@ -275,8 +281,7 @@ const ChartContainer = styled(motion.div)`
   @media (max-width: 480px) {
     padding: 16px;
     height: 300px;
-    margin: 0 -12px;
-    width: calc(100% + 24px);
+    border-radius: 12px;
   }
 `;
 
