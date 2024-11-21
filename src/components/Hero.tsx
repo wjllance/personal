@@ -121,10 +121,15 @@ const ChartSection = styled(motion.div)`
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+  margin-bottom: 40px;
 
   @media (max-width: 1200px) {
     height: 400px;
     padding: 20px;
+  }
+
+  @media (max-width: 968px) {
+    margin-bottom: 60px;
   }
 
   @media (max-width: 768px) {
@@ -135,6 +140,7 @@ const ChartSection = styled(motion.div)`
   @media (max-width: 480px) {
     height: 300px;
     padding: 16px;
+    margin-bottom: 240px;
   }
 `;
 
