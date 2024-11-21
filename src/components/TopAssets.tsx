@@ -5,19 +5,22 @@ import axios from 'axios';
 // API Configuration
 const API_KEYS = {
   ALPHA_VANTAGE: process.env.REACT_APP_ALPHA_VANTAGE_API_KEY || 'your_alpha_vantage_key',
-  FMP: process.env.REACT_APP_FMP_API_KEY || 'your_fmp_key'
+  FMP: process.env.REACT_APP_FMP_API_KEY || 'your_fmp_key',
+  METAL_PRICE: process.env.REACT_APP_METAL_PRICE_API_KEY || 'your_metal_price_key'
 };
 
 const API_ENDPOINTS = {
   COINGECKO: 'https://api.coingecko.com/api/v3',
   ALPHA_VANTAGE: 'https://www.alphavantage.co/query',
-  FMP: 'https://financialmodelingprep.com/api/v3'
+  FMP: 'https://financialmodelingprep.com/api/v3',
+  METAL_PRICE: 'https://api.metalpriceapi.com/v1'
 };
 
 interface Asset {
   name: string;
   marketCap: number;
   symbol: string;
+  price: number;
   priceChange24h: number;
   type: 'crypto' | 'stock' | 'commodity';
 }
@@ -292,7 +295,8 @@ const TopAssets: React.FC = () => {
             symbol: coin.symbol.toUpperCase(),
             marketCap: coin.market_cap,
             priceChange24h: coin.price_change_percentage_24h,
-            type: 'crypto' as const
+            type: 'crypto' as const,
+            price: coin.current_price
           };
         })
         .filter((coin: Asset | null): coin is Asset => coin !== null);
@@ -314,7 +318,7 @@ const TopAssets: React.FC = () => {
 
   // Fetch stock data using FMP API
   const fetchStockData = async () => {
-    const symbols = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA'];
+    const symbols = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'BRK.B', 'META','TSM', '2222.SR'];
     try {
       const response = await axios.get(`${API_ENDPOINTS.FMP}/quote/${symbols.join(',')}`, {
         params: {
@@ -330,8 +334,9 @@ const TopAssets: React.FC = () => {
       const stockData = response.data.map((quote: any) => ({
         name: quote.name,
         symbol: quote.symbol,
+        price: quote.price,
         marketCap: quote.marketCap,
-        priceChange24h: quote.changesPercentage, // Using changesPercentage instead of change
+        priceChange24h: quote.changesPercentage,
         type: 'stock'
       }));
 
@@ -342,49 +347,88 @@ const TopAssets: React.FC = () => {
     }
   };
 
-  // Type guard function to check if response is an Asset
-  const isCommodityAsset = (response: any): response is Asset => {
-    return response !== null &&
-           typeof response.name === 'string' &&
-           typeof response.symbol === 'string' &&
-           typeof response.marketCap === 'number' &&
-           typeof response.priceChange24h === 'number' &&
-           response.type === 'commodity';
-  };
 
-  // Fetch commodity data using FMP API
+  // Fetch commodity data using Metal Price API
   const fetchCommodityData = async () => {
-    const commodities = [
-      { symbol: 'GOLD', name: 'Gold' },
-      { symbol: 'SILVER', name: 'Silver' }
-    ];
-
     try {
-      const responses = await Promise.all(
-        commodities.map(async (commodity) => {
-          const response = await axios.get(`${API_ENDPOINTS.FMP}/quote/${commodity.symbol}`, {
-            params: {
-              apikey: API_KEYS.FMP
-            }
-          });
+      // Constants for market cap calculation
+      const GOLD_SUPPLY_TONS = 205238; // metric tons
+      const SILVER_SUPPLY_TONS = 1850000; // metric tons
+      const METRIC_TON_TO_OUNCES = 35274; // 1 metric ton = 35,274 ounces
 
-          if (!response.data || response.data.length === 0) {
-            console.error(`No data returned for ${commodity.symbol}`);
-            return null;
+      // Get yesterday's date for price change
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 2);
+
+      const formatDate = (date: Date) => {
+        return date.toISOString().split('T')[0];
+      };
+
+      // Calculate market cap using actual supply data
+      const calculateMarketCap = (price: number, supplyTons: number) => {
+        const supplyOunces = supplyTons * METRIC_TON_TO_OUNCES;
+        console.log(`Price per ounce: $${price.toFixed(2)}`);
+        console.log(`Total supply in ounces: ${supplyOunces.toLocaleString()}`);
+        const marketCap = price * supplyOunces;
+        console.log(`Market Cap: $${marketCap.toLocaleString()}`);
+        return marketCap;
+      };
+
+      // Fetch current prices and price changes
+      const [goldPrice, silverPrice, yesterdayGold, yesterdaySilver] = await Promise.all([
+        axios.get(`${API_ENDPOINTS.METAL_PRICE}/latest`, {
+          params: {
+            api_key: API_KEYS.METAL_PRICE,
+            currencies: 'XAU'
           }
+        }),
+        axios.get(`${API_ENDPOINTS.METAL_PRICE}/latest`, {
+          params: {
+            api_key: API_KEYS.METAL_PRICE,
+            currencies: 'XAG'
+          }
+        }),
+        axios.get(`${API_ENDPOINTS.METAL_PRICE}/${formatDate(yesterday)}`, {
+          params: {
+            api_key: API_KEYS.METAL_PRICE,
+            currencies: 'XAU',
 
-          const quote = response.data[0];
-          return {
-            name: commodity.name,
-            symbol: commodity.symbol,
-            marketCap: quote.marketCap || quote.price * 1e9, // Use marketCap if available, otherwise approximate
-            priceChange24h: quote.change || 0,
-            type: 'commodity'
-          };
+          }
+        }),
+        axios.get(`${API_ENDPOINTS.METAL_PRICE}/${formatDate(yesterday)}`, {
+          params: {
+            api_key: API_KEYS.METAL_PRICE,
+            currencies: 'XAG',
+          }
         })
-      );
+      ]);
 
-      return responses.filter(isCommodityAsset);
+      const calculatePriceChange = (currentPrice: number, previousPrice: number) => {
+        const change = ((currentPrice - previousPrice) / previousPrice) * 100;
+        return change;
+      };
+
+      const commodityData = [
+        {
+          name: 'Gold',
+          symbol: 'XAU/USD',
+          price: goldPrice.data.rates.USDXAU,
+          marketCap: calculateMarketCap(goldPrice.data.rates.USDXAU, GOLD_SUPPLY_TONS),
+          priceChange24h: calculatePriceChange(goldPrice.data.rates.USDXAU, yesterdayGold.data.rates.USDXAU),
+          type: 'commodity' as const
+        },
+        {
+          name: 'Silver',
+          symbol: 'XAG/USD',
+          price: silverPrice.data.rates.USDXAG,
+          marketCap: calculateMarketCap(silverPrice.data.rates.USDXAG, SILVER_SUPPLY_TONS),
+          priceChange24h: calculatePriceChange(silverPrice.data.rates.USDXAG, yesterdaySilver.data.rates.USDXAG),
+          type: 'commodity' as const
+        }
+      ];
+
+      return commodityData
     } catch (error) {
       console.error('Error fetching commodity data:', error);
       return [];
@@ -443,11 +487,16 @@ const TopAssets: React.FC = () => {
 
   const formatMarketCap = (marketCap: number) => {
     if (marketCap >= 1e12) {
-      return `$${(marketCap / 1e12).toFixed(1)}T`;
+      return `$${(marketCap / 1e12).toFixed(3)}T`;
     } else if (marketCap >= 1e9) {
-      return `$${(marketCap / 1e9).toFixed(1)}B`;
+      return `$${(marketCap / 1e9).toFixed(3)}B`;
     }
-    return `$${(marketCap / 1e6).toFixed(1)}M`;
+    return `$${(marketCap / 1e6).toFixed(3)}M`;
+  };
+
+  const formatPrice = (price: number) => {
+    if(!price) return '-';
+    return `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
   const formatPriceChange = (change: number) => {
@@ -486,6 +535,9 @@ const TopAssets: React.FC = () => {
                     </PriceChange>
                   </AssetSymbol>
                 </AssetInfo>
+                <AssetInfo>
+                  <AssetName>{formatPrice(asset.price)}</AssetName>
+                </AssetInfo>
                 <MarketCap>{formatMarketCap(asset.marketCap)}</MarketCap>
               </AssetItem>
             ))}
@@ -502,6 +554,9 @@ const TopAssets: React.FC = () => {
                       {formatPriceChange(asset.priceChange24h)}
                     </PriceChange>
                   </AssetSymbol>
+                </AssetInfo>
+                <AssetInfo>
+                  <AssetName>{formatPrice(asset.price)}</AssetName>
                 </AssetInfo>
                 <MarketCap>{formatMarketCap(asset.marketCap)}</MarketCap>
               </AssetItem>
