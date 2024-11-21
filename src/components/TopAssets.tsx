@@ -324,6 +324,80 @@ const setCache = (data: Asset[]) => {
   }
 };
 
+// Fallback static data
+const STATIC_DATA = {
+  crypto: [
+    {
+      name: 'Bitcoin',
+      symbol: 'BTC',
+      marketCap: 1000000000000,
+      price: 43000,
+      priceChange24h: 2.5,
+      type: 'crypto' as const
+    },
+    {
+      name: 'Ethereum',
+      symbol: 'ETH',
+      marketCap: 250000000000,
+      price: 2200,
+      priceChange24h: 3.2,
+      type: 'crypto' as const
+    },
+    {
+      name: 'BNB',
+      symbol: 'BNB',
+      marketCap: 45000000000,
+      price: 310,
+      priceChange24h: -1.2,
+      type: 'crypto' as const
+    }
+  ],
+  stocks: [
+    {
+      name: 'Apple Inc.',
+      symbol: 'AAPL',
+      marketCap: 3000000000000,
+      price: 185.92,
+      priceChange24h: 1.2,
+      type: 'stock' as const
+    },
+    {
+      name: 'Microsoft',
+      symbol: 'MSFT',
+      marketCap: 2800000000000,
+      price: 376.17,
+      priceChange24h: 0.8,
+      type: 'stock' as const
+    },
+    {
+      name: 'NVIDIA',
+      symbol: 'NVDA',
+      marketCap: 1200000000000,
+      price: 485.09,
+      priceChange24h: 2.5,
+      type: 'stock' as const
+    }
+  ],
+  commodities: [
+    {
+      name: 'Gold',
+      symbol: 'XAU/USD',
+      marketCap: 13800000000000,
+      price: 2050,
+      priceChange24h: 0.5,
+      type: 'commodity' as const
+    },
+    {
+      name: 'Silver',
+      symbol: 'XAG/USD',
+      marketCap: 1500000000000,
+      price: 24.5,
+      priceChange24h: -0.8,
+      type: 'commodity' as const
+    }
+  ]
+};
+
 const TopAssets: React.FC = () => {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
@@ -332,39 +406,29 @@ const TopAssets: React.FC = () => {
   // Fetch cryptocurrency data from CoinGecko
   const fetchCryptoData = async () => {
     try {
-      const response = await axios.get(
-        `${API_ENDPOINTS.COINGECKO}/coins/markets`,
-        {
-          params: {
-            vs_currency: 'usd',
-            order: 'market_cap_desc',
-            per_page: 3,
-            page: 1,
-            sparkline: false
-          }
+      const response = await axios.get(`${API_ENDPOINTS.COINGECKO}/coins/markets`, {
+        params: {
+          vs_currency: 'usd',
+          order: 'market_cap_desc',
+          per_page: 3,
+          page: 1,
+          sparkline: false
         }
-      );
+      });
 
       return response.data
-        .map((coin: any) => {
-          if (!coin.market_cap || !coin.price_change_percentage_24h) {
-            console.error(`Missing required data for coin ${coin.name}`);
-            return null;
-          }
-
-          return {
-            name: coin.name,
-            symbol: coin.symbol.toUpperCase(),
-            marketCap: coin.market_cap,
-            priceChange24h: coin.price_change_percentage_24h,
-            type: 'crypto' as const,
-            price: coin.current_price
-          };
-        })
+        .map((coin: any) => ({
+          name: coin.name,
+          symbol: coin.symbol.toUpperCase(),
+          marketCap: coin.market_cap,
+          priceChange24h: coin.price_change_percentage_24h,
+          type: 'crypto' as const,
+          price: coin.current_price
+        }))
         .filter((coin: Asset | null): coin is Asset => coin !== null);
     } catch (error) {
       console.error('Error fetching crypto data:', error);
-      return [];
+      return STATIC_DATA.crypto;
     }
   };
 
@@ -388,24 +452,19 @@ const TopAssets: React.FC = () => {
         }
       });
 
-      if (!response.data || response.data.length === 0) {
-        console.error('No stock data returned');
-        return [];
-      }
-
       const stockData = response.data.map((quote: any) => ({
         name: quote.name,
         symbol: quote.symbol,
         price: quote.price,
         marketCap: quote.marketCap,
         priceChange24h: quote.changesPercentage,
-        type: 'stock'
+        type: 'stock' as const
       }));
 
       return stockData.filter(isStockAsset);
     } catch (error) {
       console.error('Error fetching stock data:', error);
-      return [];
+      return STATIC_DATA.stocks;
     }
   };
 
@@ -414,8 +473,8 @@ const TopAssets: React.FC = () => {
   const fetchCommodityData = async () => {
     try {
       // Constants for market cap calculation
-      const GOLD_SUPPLY_TONS = 205238; // metric tons
-      const SILVER_SUPPLY_TONS = 1850000; // metric tons
+      const GOLD_SUPPLY_TONS = 205000; // Total above-ground gold in metric tons
+      const SILVER_SUPPLY_TONS = 1740000; // Total above-ground silver in metric tons
       const METRIC_TON_TO_OUNCES = 35274; // 1 metric ton = 35,274 ounces
 
       // Get yesterday's date for price change
@@ -427,17 +486,12 @@ const TopAssets: React.FC = () => {
         return date.toISOString().split('T')[0];
       };
 
-      // Calculate market cap using actual supply data
-      const calculateMarketCap = (price: number, supplyTons: number) => {
-        const supplyOunces = supplyTons * METRIC_TON_TO_OUNCES;
-        console.log(`Price per ounce: $${price.toFixed(2)}`);
-        console.log(`Total supply in ounces: ${supplyOunces.toLocaleString()}`);
-        const marketCap = price * supplyOunces;
+      const calculateMarketCap = (pricePerOunce: number, supplyTons: number) => {
+        const marketCap = pricePerOunce * supplyTons * METRIC_TON_TO_OUNCES;
         console.log(`Market Cap: $${marketCap.toLocaleString()}`);
         return marketCap;
       };
 
-      // Fetch current prices and price changes
       const [goldPrice, silverPrice, yesterdayGold, yesterdaySilver] = await Promise.all([
         axios.get(`${API_ENDPOINTS.METAL_PRICE}/latest`, {
           params: {
@@ -455,7 +509,6 @@ const TopAssets: React.FC = () => {
           params: {
             api_key: API_KEYS.METAL_PRICE,
             currencies: 'XAU',
-
           }
         }),
         axios.get(`${API_ENDPOINTS.METAL_PRICE}/${formatDate(yesterday)}`, {
@@ -464,7 +517,10 @@ const TopAssets: React.FC = () => {
             currencies: 'XAG',
           }
         })
-      ]);
+      ]).catch(error => {
+        console.error('Error fetching commodity prices:', error);
+        throw error;
+      });
 
       const calculatePriceChange = (currentPrice: number, previousPrice: number) => {
         const change = ((currentPrice - previousPrice) / previousPrice) * 100;
@@ -490,10 +546,38 @@ const TopAssets: React.FC = () => {
         }
       ];
 
-      return commodityData
+      return commodityData;
     } catch (error) {
       console.error('Error fetching commodity data:', error);
-      return [];
+      return STATIC_DATA.commodities;
+    }
+  };
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const [cryptoData, stockData, commodityData] = await Promise.all([
+        fetchCryptoData().catch(() => STATIC_DATA.crypto),
+        fetchStockData().catch(() => STATIC_DATA.stocks),
+        fetchCommodityData().catch(() => STATIC_DATA.commodities)
+      ]);
+
+      const allAssets = [...cryptoData, ...stockData, ...commodityData];
+      
+      // Sort by market cap
+      const sortedAssets = allAssets.sort((a, b) => b.marketCap - a.marketCap);
+      setAssets(sortedAssets);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      // Use all static data if everything fails
+      const fallbackData = [...STATIC_DATA.crypto, ...STATIC_DATA.stocks, ...STATIC_DATA.commodities]
+        .sort((a, b) => b.marketCap - a.marketCap);
+      setAssets(fallbackData);
+      setError('Unable to fetch live data. Showing static data.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -511,32 +595,9 @@ const TopAssets: React.FC = () => {
           return;
         }
 
-        setLoading(true);
-
-        // Fetch data from all sources
-        const [stockAssets, commodityAssets, cryptoAssets] = await Promise.all([
-          fetchStockData(),
-          fetchCommodityData(),
-          fetchCryptoData()
-        ]);
-
-        // Combine and sort all assets by market cap
-        const allAssets = [...stockAssets, ...commodityAssets, ...cryptoAssets]
-          .filter(asset => asset !== null)
-          .sort((a, b) => b.marketCap - a.marketCap)
-          .slice(0, 10);
-
-        console.log("allAssets", allAssets)
-
-        setAssets(allAssets);
-        // Cache the fetched data
-        setCache(allAssets);
-        setError(null);
+        await fetchData();
       } catch (err) {
         console.error('Error fetching data:', err);
-        setError('Failed to fetch market data');
-      } finally {
-        setLoading(false);
       }
     };
 
