@@ -18,8 +18,8 @@ interface Asset {
   name: string;
   marketCap: number;
   symbol: string;
-  priceChange24h?: number;
-  type?: 'crypto' | 'stock' | 'commodity';
+  priceChange24h: number;
+  type: 'crypto' | 'stock' | 'commodity';
 }
 
 const shimmer = keyframes`
@@ -280,101 +280,111 @@ const TopAssets: React.FC = () => {
         }
       );
 
-      return response.data.map((coin: any) => ({
-        name: coin.name,
-        symbol: coin.symbol.toUpperCase(),
-        marketCap: coin.market_cap,
-        priceChange24h: coin.price_change_percentage_24h,
-        type: 'crypto' as const
-      }));
+      return response.data
+        .map((coin: any) => {
+          if (!coin.market_cap || !coin.price_change_percentage_24h) {
+            console.error(`Missing required data for coin ${coin.name}`);
+            return null;
+          }
+
+          return {
+            name: coin.name,
+            symbol: coin.symbol.toUpperCase(),
+            marketCap: coin.market_cap,
+            priceChange24h: coin.price_change_percentage_24h,
+            type: 'crypto' as const
+          };
+        })
+        .filter((coin: Asset | null): coin is Asset => coin !== null);
     } catch (error) {
       console.error('Error fetching crypto data:', error);
       return [];
     }
   };
 
-  // Fetch stock data using Financial Modeling Prep
-  const fetchStockDataFMP = async () => {
-    try {
-      const symbols = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', '2222.SR'];
-      const response = await axios.get(
-        `${API_ENDPOINTS.FMP}/quote/${symbols.join(',')}`,
-        {
-          params: {
-            apikey: API_KEYS.FMP
-          }
-        }
-      );
+  // Type guard function to check if response is a stock Asset
+  const isStockAsset = (response: any): response is Asset => {
+    return response !== null &&
+           typeof response.name === 'string' &&
+           typeof response.symbol === 'string' &&
+           typeof response.marketCap === 'number' &&
+           typeof response.priceChange24h === 'number' &&
+           response.type === 'stock';
+  };
 
-      return response.data.map((stock: any) => ({
-        name: stock.name,
-        symbol: stock.symbol,
-        marketCap: stock.marketCap,
-        priceChange24h: stock.changesPercentage,
-        type: 'stock' as const
+  // Fetch stock data using FMP API
+  const fetchStockData = async () => {
+    const symbols = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA'];
+    try {
+      const response = await axios.get(`${API_ENDPOINTS.FMP}/quote/${symbols.join(',')}`, {
+        params: {
+          apikey: API_KEYS.FMP
+        }
+      });
+
+      if (!response.data || response.data.length === 0) {
+        console.error('No stock data returned');
+        return [];
+      }
+
+      const stockData = response.data.map((quote: any) => ({
+        name: quote.name,
+        symbol: quote.symbol,
+        marketCap: quote.marketCap,
+        priceChange24h: quote.changesPercentage, // Using changesPercentage instead of change
+        type: 'stock'
       }));
+
+      return stockData.filter(isStockAsset);
     } catch (error) {
       console.error('Error fetching stock data:', error);
       return [];
     }
   };
 
-  // Fetch stock data using Alpha Vantage
-  const fetchStockDataAV = async (symbol: string) => {
-    try {
-      const response = await axios.get(API_ENDPOINTS.ALPHA_VANTAGE, {
-        params: {
-          function: 'GLOBAL_QUOTE',
-          symbol,
-          apikey: API_KEYS.ALPHA_VANTAGE
-        }
-      });
-
-      const quote = response.data['Global Quote'];
-      return {
-        name: symbol,
-        symbol: symbol,
-        marketCap: parseFloat(quote['05. price']) * parseFloat(quote['06. volume']),
-        priceChange24h: parseFloat(quote['10. change percent'].replace('%', '')),
-        type: 'stock' as const
-      };
-    } catch (error) {
-      console.error(`Error fetching stock data for ${symbol}:`, error);
-      return null;
-    }
+  // Type guard function to check if response is an Asset
+  const isCommodityAsset = (response: any): response is Asset => {
+    return response !== null &&
+           typeof response.name === 'string' &&
+           typeof response.symbol === 'string' &&
+           typeof response.marketCap === 'number' &&
+           typeof response.priceChange24h === 'number' &&
+           response.type === 'commodity';
   };
 
-  // Fetch commodity data (Gold & Silver) using Alpha Vantage
+  // Fetch commodity data using FMP API
   const fetchCommodityData = async () => {
-    try {
-      const commodities = [
-        { symbol: 'XAU', name: 'Gold' },
-        { symbol: 'XAG', name: 'Silver' }
-      ];
+    const commodities = [
+      { symbol: 'GOLD', name: 'Gold' },
+      { symbol: 'SILVER', name: 'Silver' }
+    ];
 
+    try {
       const responses = await Promise.all(
         commodities.map(async (commodity) => {
-          const response = await axios.get(API_ENDPOINTS.ALPHA_VANTAGE, {
+          const response = await axios.get(`${API_ENDPOINTS.FMP}/quote/${commodity.symbol}`, {
             params: {
-              function: 'CURRENCY_EXCHANGE_RATE',
-              from_currency: commodity.symbol,
-              to_currency: 'USD',
-              apikey: API_KEYS.ALPHA_VANTAGE
+              apikey: API_KEYS.FMP
             }
           });
 
-          const data = response.data['Realtime Currency Exchange Rate'];
+          if (!response.data || response.data.length === 0) {
+            console.error(`No data returned for ${commodity.symbol}`);
+            return null;
+          }
+
+          const quote = response.data[0];
           return {
             name: commodity.name,
             symbol: commodity.symbol,
-            marketCap: parseFloat(data['5. Exchange Rate']) * 1e12, // Approximate market cap
-            priceChange24h: 0, // Alpha Vantage doesn't provide 24h change for commodities
-            type: 'commodity' as const
+            marketCap: quote.marketCap || quote.price * 1e9, // Use marketCap if available, otherwise approximate
+            priceChange24h: quote.change || 0,
+            type: 'commodity'
           };
         })
       );
 
-      return responses;
+      return responses.filter(isCommodityAsset);
     } catch (error) {
       console.error('Error fetching commodity data:', error);
       return [];
@@ -386,6 +396,8 @@ const TopAssets: React.FC = () => {
       try {
         // Check cache first
         const cachedData = getCache();
+
+        console.log("cachedData", cachedData)
         if (cachedData) {
           setAssets(cachedData.data);
           setLoading(false);
@@ -396,17 +408,19 @@ const TopAssets: React.FC = () => {
         setLoading(true);
 
         // Fetch data from all sources
-        const [cryptoAssets, stockAssets, commodityAssets] = await Promise.all([
-          fetchCryptoData(),
-          fetchStockDataFMP(), // or fetchStockDataAV() if using Alpha Vantage
-          fetchCommodityData()
+        const [stockAssets, commodityAssets, cryptoAssets] = await Promise.all([
+          fetchStockData(),
+          fetchCommodityData(),
+          fetchCryptoData()
         ]);
 
         // Combine and sort all assets by market cap
-        const allAssets = [...cryptoAssets, ...stockAssets, ...commodityAssets]
+        const allAssets = [...stockAssets, ...commodityAssets, ...cryptoAssets]
           .filter(asset => asset !== null)
           .sort((a, b) => b.marketCap - a.marketCap)
           .slice(0, 10);
+
+        console.log("allAssets", allAssets)
 
         setAssets(allAssets);
         // Cache the fetched data
@@ -436,8 +450,7 @@ const TopAssets: React.FC = () => {
     return `$${(marketCap / 1e6).toFixed(1)}M`;
   };
 
-  const formatPriceChange = (change: number | undefined) => {
-    if (change === undefined) return null;
+  const formatPriceChange = (change: number) => {
     return `${change >= 0 ? '+' : ''}${change.toFixed(1)}%`;
   };
 
@@ -468,11 +481,9 @@ const TopAssets: React.FC = () => {
                   <AssetName>{asset.name}</AssetName>
                   <AssetSymbol>
                     {asset.symbol}
-                    {asset.priceChange24h !== undefined && (
-                      <PriceChange isPositive={asset.priceChange24h >= 0}>
-                        {formatPriceChange(asset.priceChange24h)}
-                      </PriceChange>
-                    )}
+                    <PriceChange isPositive={asset.priceChange24h >= 0}>
+                      {formatPriceChange(asset.priceChange24h)}
+                    </PriceChange>
                   </AssetSymbol>
                 </AssetInfo>
                 <MarketCap>{formatMarketCap(asset.marketCap)}</MarketCap>
@@ -487,11 +498,9 @@ const TopAssets: React.FC = () => {
                   <AssetName>{asset.name}</AssetName>
                   <AssetSymbol>
                     {asset.symbol}
-                    {asset.priceChange24h !== undefined && (
-                      <PriceChange isPositive={asset.priceChange24h >= 0}>
-                        {formatPriceChange(asset.priceChange24h)}
-                      </PriceChange>
-                    )}
+                    <PriceChange isPositive={asset.priceChange24h >= 0}>
+                      {formatPriceChange(asset.priceChange24h)}
+                    </PriceChange>
                   </AssetSymbol>
                 </AssetInfo>
                 <MarketCap>{formatMarketCap(asset.marketCap)}</MarketCap>
