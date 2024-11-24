@@ -1,8 +1,9 @@
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { createGlobalStyle } from 'styled-components';
-import Home from './pages/Home';
-import DevTools from './components/DevTools';
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { createGlobalStyle } from "styled-components";
+import Home from "./pages/Home";
+import DevTools from "./pages/DevTools";
+import SolanaTools from "./pages/SolanaTools";
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -51,6 +52,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/devtools" element={<DevTools />} />
+        <Route path="/solana" element={<SolanaTools />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

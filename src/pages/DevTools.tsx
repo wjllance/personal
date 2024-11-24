@@ -1,6 +1,6 @@
-import React, { useState, Suspense } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import React, { useState, Suspense } from "react";
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
 import {
   DevToolsSection,
   Container,
@@ -10,18 +10,36 @@ import {
   TabButton,
   ToolContent,
   Header,
-  BackButton
-} from './styles';
+  BackButton,
+} from "../components/DevTools/styles";
 
 // Lazy load components
-const JsonFormatter = React.lazy(() => import('./tools/JsonFormatter'));
-const TimestampConverter = React.lazy(() => import('./tools/TimestampConverter'));
-const UniswapPriceConverter = React.lazy(() => import('./tools/UniswapPriceConverter'));
-const UniswapPoolInfo = React.lazy(() => import('./tools/UniswapPoolInfo'));
-const EthAddressValidator = React.lazy(() => import('./tools/EthAddressValidator'));
-const TokenDecoder = React.lazy(() => import('./tools/TokenDecoder'));
+const JsonFormatter = React.lazy(
+  () => import("../components/DevTools/tools/JsonFormatter")
+);
+const TimestampConverter = React.lazy(
+  () => import("../components/DevTools/tools/TimestampConverter")
+);
+const UniswapPriceConverter = React.lazy(
+  () => import("../components/DevTools/tools/UniswapPriceConverter")
+);
+const UniswapPoolInfo = React.lazy(
+  () => import("../components/DevTools/tools/UniswapPoolInfo")
+);
+const EthAddressValidator = React.lazy(
+  () => import("../components/DevTools/tools/EthAddressValidator")
+);
+const TokenDecoder = React.lazy(
+  () => import("../components/DevTools/tools/TokenDecoder")
+);
 
-type Tool = 'json' | 'timestamp' | 'uniswap' | 'pool-info' | 'eth-address' | 'token' ;
+type Tool =
+  | "json"
+  | "timestamp"
+  | "uniswap"
+  | "pool-info"
+  | "eth-address"
+  | "token";
 
 interface ToolDefinition {
   id: Tool;
@@ -31,41 +49,41 @@ interface ToolDefinition {
 }
 
 const tools: ToolDefinition[] = [
-  { 
-    id: 'json',
-    name: 'JSON Formatter',
+  {
+    id: "json",
+    name: "JSON Formatter",
     component: JsonFormatter,
-    description: 'Format and validate JSON data'
-  },
-  { 
-    id: 'timestamp',
-    name: 'Timestamp Converter',
-    component: TimestampConverter,
-    description: 'Convert between different timestamp formats'
-  },
-  { 
-    id: 'uniswap',
-    name: 'Uniswap Price',
-    component: UniswapPriceConverter,
-    description: 'Calculate Uniswap token prices and liquidity'
+    description: "Format and validate JSON data",
   },
   {
-    id: 'pool-info',
-    name: 'Uniswap Pool Info',
+    id: "timestamp",
+    name: "Timestamp Converter",
+    component: TimestampConverter,
+    description: "Convert between different timestamp formats",
+  },
+  {
+    id: "uniswap",
+    name: "Uniswap Price",
+    component: UniswapPriceConverter,
+    description: "Calculate Uniswap token prices and liquidity",
+  },
+  {
+    id: "pool-info",
+    name: "Pool Info",
     component: UniswapPoolInfo,
-    description: 'Fetch Uniswap V3 pool information and token details'
+    description: "View Uniswap pool information",
   },
-  { 
-    id: 'eth-address',
-    name: 'ETH Address Validator',
+  {
+    id: "eth-address",
+    name: "ETH Address",
     component: EthAddressValidator,
-    description: 'Validate Ethereum addresses and ENS names'
+    description: "Validate and format Ethereum addresses",
   },
-  { 
-    id: 'token',
-    name: 'ERC20 Token Decoder',
+  {
+    id: "token",
+    name: "Token Decoder",
     component: TokenDecoder,
-    description: 'Decode ERC20 token data and transactions'
+    description: "Decode token data and metadata",
   },
 ];
 
@@ -79,8 +97,12 @@ const LoadingSpinner = styled.div`
   margin: 40px auto;
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 `;
 
@@ -105,7 +127,7 @@ class ToolErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Tool Error:', error, errorInfo);
+    console.error("Tool Error:", error, errorInfo);
   }
 
   render() {
@@ -114,7 +136,9 @@ class ToolErrorBoundary extends React.Component<
         <ErrorContainer>
           <ErrorTitle>Something went wrong</ErrorTitle>
           <ErrorMessage>{this.state.error?.message}</ErrorMessage>
-          <RetryButton onClick={() => this.setState({ hasError: false, error: null })}>
+          <RetryButton
+            onClick={() => this.setState({ hasError: false, error: null })}
+          >
             Try Again
           </RetryButton>
         </ErrorContainer>
@@ -160,22 +184,22 @@ const RetryButton = styled.button`
 
 const DevTools: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<Tool>('json');
+  const [activeTab, setActiveTab] = useState<Tool>("json");
 
-  const activeTool = tools.find(tool => tool.id === activeTab);
+  const activeTool = tools.find((tool) => tool.id === activeTab);
 
   return (
     <DevToolsSection id="devtools">
       <Container>
         <Header>
-          <BackButton onClick={() => navigate('/')} aria-label="Back to home">
+          <BackButton onClick={() => navigate("/")} aria-label="Back to home">
             ← Back to Home
           </BackButton>
           <Title>Developer Tools</Title>
         </Header>
         <ToolsContainer>
           <TabList>
-            {tools.map(tool => (
+            {tools.map((tool) => (
               <div key={tool.id}>
                 <TabButton
                   active={activeTab === tool.id}
