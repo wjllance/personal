@@ -29,7 +29,7 @@ export const TOKEN_ADDRESSES: { [key: string]: string } = {
   "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R": "RAY",
 };
 
-interface TokenTransfer {
+export interface TokenTransfer {
   from: string;
   to: string;
   amount: number;
@@ -94,35 +94,32 @@ export const parseTokenTransfers = (
       const preAmount = pre.uiTokenAmount.uiAmount || 0;
       const postAmount = post.uiTokenAmount.uiAmount || 0;
       const change = postAmount - preAmount;
-
-      if (Math.abs(change) > 0.000001) {
-        // Filter out dust
-        const address = pre.owner;
-
-        // console.log("Found change", change, pre, post);
-
-        const tokenSymbol =
-          TOKEN_ADDRESSES[pre.mint] || pre.mint.slice(0, 8) + "...";
-
-        // Only record if the initiator is involved
-        if (address === initiator) {
-          transfers.push({
-            from: address,
-            to: address,
-            amount: Math.abs(change),
-            token: tokenSymbol,
-            mint: pre.mint,
-            type: change > 0 ? "in" : "out",
-          });
-
-          console.log("Found transfer:", {
-            address,
-            change,
-            token: tokenSymbol,
-            type: change > 0 ? "in" : "out",
-          });
-        }
+      if (change === 0) {
+        return;
       }
+
+      // Filter out dust
+      const address = pre.owner!;
+
+      const tokenSymbol =
+        TOKEN_ADDRESSES[pre.mint] || pre.mint.slice(0, 8) + "...";
+
+      // Only record if the initiator is involved
+      transfers.push({
+        from: address,
+        to: address,
+        amount: Math.abs(change),
+        token: tokenSymbol,
+        mint: pre.mint,
+        type: change > 0 ? "in" : "out",
+      });
+
+      console.log("Found transfer:", {
+        address,
+        change,
+        token: tokenSymbol,
+        type: change > 0 ? "in" : "out",
+      });
     }
   });
 
@@ -132,53 +129,36 @@ export const parseTokenTransfers = (
     if (!processedAccounts.has(key)) {
       const amount = post.uiTokenAmount.uiAmount || 0;
       if (amount > 0) {
-        const address = post.owner;
+        const address = post.owner!;
         const tokenSymbol =
           TOKEN_ADDRESSES[post.mint] || post.mint.slice(0, 8) + "...";
 
-        // Only record if the initiator is involved
-        if (address === initiator) {
-          transfers.push({
-            from: "new",
-            to: address,
-            amount,
-            token: tokenSymbol,
-            mint: post.mint,
-            type: "in",
-          });
+        transfers.push({
+          from: "new",
+          to: address,
+          amount,
+          token: tokenSymbol,
+          mint: post.mint,
+          type: "in",
+        });
 
-          console.log("Found new balance:", {
-            address,
-            amount,
-            token: tokenSymbol,
-          });
-        }
+        console.log("Found new balance:", {
+          address,
+          amount,
+          token: tokenSymbol,
+        });
       }
     }
   });
 
-  const postBalances = transaction.meta?.postBalances || [];
-  const preBalances = transaction.meta?.preBalances || [];
-
-  const balance = postBalances[0];
-  const preBalance = preBalances[0];
-  const fee = transaction.meta?.fee || 0;
-
-  const change = (fee + balance - preBalance) / 1e9;
-  if (Math.abs(change) > 0.000001) {
-    transfers.push({
-      from: initiator,
-      to: initiator,
-      amount: change,
-      token: "SOL",
-      mint: "11111111111111111111111111111111",
-      type: change > 0 ? "in" : "out",
-    });
-  }
-
   console.log("Final transfers:", transfers);
   return transfers;
 };
+
+export interface RaydiumTransactionData {
+  transaction: VersionedTransactionResponse;
+  transfers: TokenTransfer[];
+}
 
 export async function fetchRaydiumTransactions(blockNumber: string | number) {
   try {
@@ -207,17 +187,24 @@ export async function fetchRaydiumTransactions(blockNumber: string | number) {
         } as VersionedTransactionResponse;
       });
 
+    // Parse token transfers for each transaction
+    const processedTransactions: RaydiumTransactionData[] =
+      raydiumTransactions.map((tx) => ({
+        transaction: tx,
+        transfers: parseTokenTransfers(tx),
+      }));
+
     return {
       success: true,
-      data: raydiumTransactions,
-      error: null
+      data: processedTransactions,
+      error: null,
     };
   } catch (error) {
     console.error("Error fetching Raydium transactions:", error);
     return {
       success: false,
-      data: [],
-      error: error instanceof Error ? error.message : "An error occurred"
+      data: [] as RaydiumTransactionData[],
+      error: error instanceof Error ? error.message : "An error occurred",
     };
   }
 }
