@@ -23,16 +23,16 @@ const SolanaTools: React.FC = () => {
       <ToolsContainer>
         <TabList>
           <TabButton
-            active={activeTab === "balance"}
-            onClick={() => setActiveTab("balance")}
-          >
-            SOL Balance Checker
-          </TabButton>
-          <TabButton
             active={activeTab === "transactions"}
             onClick={() => setActiveTab("transactions")}
           >
             Raydium Transaction Filter
+          </TabButton>
+          <TabButton
+            active={activeTab === "balance"}
+            onClick={() => setActiveTab("balance")}
+          >
+            SOL Balance Checker
           </TabButton>
         </TabList>
         <ToolContent>
