@@ -1,11 +1,10 @@
-import React from 'react';
-import styled from 'styled-components';
-import Navbar from '../components/Navbar';
-import Hero from '../components/Hero';
-import About from '../components/About';
-import Projects from '../components/Projects';
-import Contact from '../components/Contact';
-import TopAssets from '../components/TopAssets';
+import React from "react";
+import styled from "styled-components";
+import Navbar from "../components/Navbar";
+import Hero from "../components/Hero";
+import About from "../components/About";
+import Projects from "../components/Projects";
+import Contact from "../components/Contact";
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -22,7 +21,7 @@ const MainContent = styled.main`
   overflow-x: hidden;
 
   &::before {
-    content: '';
+    content: "";
     position: fixed;
     top: 0;
     left: 0;
@@ -63,9 +62,7 @@ const Home: React.FC = () => {
         <Section id="home">
           <Hero id="home" />
         </Section>
-        <Section id="assets" style={{ minHeight: 'auto', paddingTop: '40px', paddingBottom: '40px' }}>
-          <TopAssets />
-        </Section>
+
         <Section id="about">
           <About id="about" />
         </Section>

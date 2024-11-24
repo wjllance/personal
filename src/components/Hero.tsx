@@ -1,8 +1,8 @@
-import React from 'react';
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
-import { FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa';
-import BitcoinTrend from './BitcoinTrend';
+import React from "react";
+import styled from "styled-components";
+import { motion } from "framer-motion";
+import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
+import BitcoinTrend from "./BitcoinTrend";
 
 interface HeroProps {
   id?: string;
@@ -15,7 +15,7 @@ const HeroContainer = styled.section`
   align-items: center;
   justify-content: center;
   padding: 120px 20px 60px;
-  
+
   @media (max-width: 768px) {
     padding: 80px 16px 40px;
     min-height: calc(100vh - 60px);
@@ -57,7 +57,7 @@ const Title = styled(motion.h1)`
   color: #64ffda;
   margin: 0;
   line-height: 1.2;
-  
+
   @media (max-width: 768px) {
     font-size: clamp(1.8rem, 6vw, 2.5rem);
   }
@@ -69,7 +69,7 @@ const Subtitle = styled(motion.h2)`
   color: #8892b0;
   margin: 0;
   line-height: 1.5;
-  
+
   @media (max-width: 768px) {
     font-size: clamp(0.9rem, 4vw, 1.2rem);
   }
@@ -183,21 +183,37 @@ const Hero: React.FC<HeroProps> = ({ id }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            Building the future of decentralized finance and Web3 applications. 
-            Passionate about creating secure, efficient, and innovative blockchain solutions.
+            Building the future of decentralized finance and Web3 applications.
+            Passionate about creating secure, efficient, and innovative
+            blockchain solutions.
           </Description>
           <SocialLinks
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.6 }}
           >
-            <SocialLink href="https://github.com/wjllance" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <SocialLink
+              href="https://github.com/wjllance"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+            >
               <FaGithub />
             </SocialLink>
-            <SocialLink href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <SocialLink
+              href="https://linkedin.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+            >
               <FaLinkedin />
             </SocialLink>
-            <SocialLink href="https://twitter.com/" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+            <SocialLink
+              href="https://twitter.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Twitter"
+            >
               <FaTwitter />
             </SocialLink>
           </SocialLinks>

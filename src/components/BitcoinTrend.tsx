@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState, useRef } from "react";
+import styled from "styled-components";
+import { motion } from "framer-motion";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,10 +10,10 @@ import {
   Title as Title2,
   Tooltip,
   Legend,
-  ChartOptions
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
-import BitcoinLogoSrc from '../assets/bitcoin-logo.svg';
+  ChartOptions,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+import BitcoinLogoSrc from "../assets/bitcoin-logo.svg";
 
 ChartJS.register(
   CategoryScale,
@@ -33,14 +33,14 @@ interface BitcoinTrendProps {
   id?: string;
 }
 
-type Timeframe = '24h' | '7d' | '30d' | '180d' | '365d';
+type Timeframe = "24h" | "7d" | "30d" | "180d" | "365d";
 
 const timeframeMap: Record<Timeframe, { days: string }> = {
-  '24h': { days: '1' },
-  '7d': { days: '7' },
-  '30d': { days: '30' },
-  '180d': { days: '180' },
-  '365d': { days: '365' }
+  "24h": { days: "1" },
+  "7d": { days: "7" },
+  "30d": { days: "30" },
+  "180d": { days: "180" },
+  "365d": { days: "365" },
 };
 
 const Container = styled.div`
@@ -149,9 +149,15 @@ const BitcoinLogo = styled.img`
   animation: pulse 2s infinite ease-in-out;
 
   @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
   }
 
   @media (max-width: 480px) {
@@ -208,7 +214,7 @@ const CurrentPrice = styled.div`
   font-size: 2.2rem;
   font-weight: 700;
   color: #ffffff;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   letter-spacing: -0.02em;
   line-height: 1.1;
 
@@ -222,7 +228,7 @@ const CurrentPrice = styled.div`
 `;
 
 const PriceChange = styled.span<{ isPositive: boolean }>`
-  color: ${props => props.isPositive ? '#00ff9d' : '#ff6b6b'};
+  color: ${(props) => (props.isPositive ? "#00ff9d" : "#ff6b6b")};
   font-size: 1.1rem;
   font-weight: 500;
   display: flex;
@@ -264,9 +270,12 @@ const TimeframeContainer = styled.div`
 `;
 
 const TimeframeButton = styled.button<{ active: boolean }>`
-  background: ${props => props.active ? 'rgba(100, 255, 218, 0.1)' : 'transparent'};
-  color: ${props => props.active ? '#64ffda' : '#ffffff'};
-  border: 1px solid ${props => props.active ? 'rgba(100, 255, 218, 0.2)' : 'rgba(255, 255, 255, 0.1)'};
+  background: ${(props) =>
+    props.active ? "rgba(100, 255, 218, 0.1)" : "transparent"};
+  color: ${(props) => (props.active ? "#64ffda" : "#ffffff")};
+  border: 1px solid
+    ${(props) =>
+      props.active ? "rgba(100, 255, 218, 0.2)" : "rgba(255, 255, 255, 0.1)"};
   padding: 6px 12px;
   border-radius: 8px;
   font-size: 0.9rem;
@@ -275,7 +284,8 @@ const TimeframeButton = styled.button<{ active: boolean }>`
   transition: all 0.2s ease;
 
   &:hover {
-    background: ${props => props.active ? 'rgba(100, 255, 218, 0.15)' : 'rgba(255, 255, 255, 0.05)'};
+    background: ${(props) =>
+      props.active ? "rgba(100, 255, 218, 0.15)" : "rgba(255, 255, 255, 0.05)"};
     transform: translateY(-1px);
   }
 
@@ -352,8 +362,12 @@ const LoadingSpinner = styled(motion.div)`
   animation: spin 1s linear infinite;
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 `;
 
@@ -392,14 +406,18 @@ const RetryButton = styled(motion.button)`
 `;
 
 const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
-  const [timeframe, setTimeframe] = useState<Timeframe>('24h');
+  const [timeframe, setTimeframe] = useState<Timeframe>("24h");
   const [priceData, setPriceData] = useState<PriceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
-  const [priceChange, setPriceChange] = useState<{ value: number; percentage: number } | null>(null);
+  const [priceChange, setPriceChange] = useState<{
+    value: number;
+    percentage: number;
+  } | null>(null);
   const [currentPrice, setCurrentPrice] = useState<number | null>(null);
-  const [abortController, setAbortController] = useState<AbortController | null>(null);
+  const [abortController, setAbortController] =
+    useState<AbortController | null>(null);
   const retryTimeoutRef = useRef<NodeJS.Timeout>();
 
   const fetchPriceData = async () => {
@@ -414,42 +432,49 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
 
     try {
       const response = await fetch(
-        `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=${
-          timeframeMap[timeframe].days
-        }`,
+        `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=${timeframeMap[timeframe].days}`,
         { signal: newController.signal }
       );
 
       if (!response.ok) {
-        throw new Error('Failed to fetch price data');
+        throw new Error("Failed to fetch price data");
       }
 
       const data: PriceData = await response.json();
-      
+
       // Validate data structure
-      if (!data.prices || !Array.isArray(data.prices) || data.prices.length === 0) {
-        throw new Error('Invalid price data received');
+      if (
+        !data.prices ||
+        !Array.isArray(data.prices) ||
+        data.prices.length === 0
+      ) {
+        throw new Error("Invalid price data received");
       }
 
       // Set current price
       const latestPrice = data.prices[data.prices.length - 1][1];
-      if (typeof latestPrice === 'number' && !isNaN(latestPrice)) {
+      if (typeof latestPrice === "number" && !isNaN(latestPrice)) {
         setCurrentPrice(latestPrice);
       }
-      
+
       // Calculate price change
       if (data.prices.length >= 2) {
         const startPrice = data.prices[0][1];
         const endPrice = data.prices[data.prices.length - 1][1];
-        
-        if (typeof startPrice === 'number' && typeof endPrice === 'number' && 
-            !isNaN(startPrice) && !isNaN(endPrice) && startPrice !== 0) {
+
+        if (
+          typeof startPrice === "number" &&
+          typeof endPrice === "number" &&
+          !isNaN(startPrice) &&
+          !isNaN(endPrice) &&
+          startPrice !== 0
+        ) {
           const change = endPrice - startPrice;
           const changePercentage = (change / startPrice) * 100;
-          
+
           setPriceChange({
             value: change,
-            percentage: changePercentage
+            percentage: changePercentage,
           });
         }
       }
@@ -457,20 +482,20 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
       setPriceData(data);
       setRetryCount(0);
     } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
+      if (err instanceof Error && err.name === "AbortError") {
         return;
       }
-      
-      console.error('Error fetching price data:', err);
-      setError('Failed to update price data');
-      
+
+      console.error("Error fetching price data:", err);
+      setError("Failed to update price data");
+
       // Schedule retry after delay (exponential backoff)
       const retryDelay = Math.min(1000 * Math.pow(2, retryCount), 30000); // Max 30 seconds
       if (retryTimeoutRef.current) {
         clearTimeout(retryTimeoutRef.current);
       }
       retryTimeoutRef.current = setTimeout(() => {
-        setRetryCount(prev => prev + 1);
+        setRetryCount((prev) => prev + 1);
         fetchPriceData();
       }, retryDelay);
     } finally {
@@ -480,10 +505,10 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
 
   useEffect(() => {
     fetchPriceData();
-    
+
     // Set up periodic refresh
     const refreshInterval = setInterval(fetchPriceData, 60000); // Refresh every minute
-    
+
     return () => {
       if (retryTimeoutRef.current) {
         clearTimeout(retryTimeoutRef.current);
@@ -501,10 +526,7 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
         <ChartHeader>
           <HeaderTop>
             <TitleGroup>
-              <BitcoinLogo 
-                src="" 
-                alt="Bitcoin logo"
-              />
+              <BitcoinLogo src="" alt="Bitcoin logo" />
               <Title>BTC/USD Live</Title>
             </TitleGroup>
           </HeaderTop>
@@ -515,9 +537,7 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
           transition={{ duration: 0.3 }}
         >
           <ErrorMessage>{error}</ErrorMessage>
-          <RetryButton onClick={() => fetchPriceData()}>
-            Retry
-          </RetryButton>
+          <RetryButton onClick={() => fetchPriceData()}>Retry</RetryButton>
         </ChartContainer>
       </Container>
     );
@@ -529,10 +549,7 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
         <ChartHeader>
           <HeaderTop>
             <TitleGroup>
-              <BitcoinLogo 
-                src={BitcoinLogoSrc} 
-                alt="Bitcoin logo"
-              />
+              <BitcoinLogo src={BitcoinLogoSrc} alt="Bitcoin logo" />
               <Title>BTC/USD Live</Title>
             </TitleGroup>
             <PriceDisplay
@@ -540,12 +557,11 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <CurrentPrice>
-                $0.00
-              </CurrentPrice>
+              <CurrentPrice>$0.00</CurrentPrice>
               {priceChange && (
                 <PriceChange isPositive={priceChange.value >= 0}>
-                  {priceChange.value >= 0 ? '↑' : '↓'} {Math.abs(priceChange.percentage).toFixed(2)}%
+                  {priceChange.value >= 0 ? "↑" : "↓"}{" "}
+                  {Math.abs(priceChange.percentage).toFixed(2)}%
                 </PriceChange>
               )}
             </PriceDisplay>
@@ -580,24 +596,24 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
-    if (timeframe === '24h') {
-      return date.toLocaleTimeString('en-US', { 
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true 
+    if (timeframe === "24h") {
+      return date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
       });
     }
-    if (timeframe === '7d') {
-      return date.toLocaleDateString('en-US', {
-        weekday: 'short',
-        hour: 'numeric',
-        hour12: true
+    if (timeframe === "7d") {
+      return date.toLocaleDateString("en-US", {
+        weekday: "short",
+        hour: "numeric",
+        hour12: true,
       });
     }
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      ...(timeframe === '365d' && { year: '2-digit' })
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      ...(timeframe === "365d" && { year: "2-digit" }),
     });
   };
 
@@ -605,42 +621,42 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
     labels: priceData?.prices.map(([timestamp]) => formatDate(timestamp)) ?? [],
     datasets: [
       {
-        label: 'Bitcoin Price (USD)',
+        label: "Bitcoin Price (USD)",
         data: priceData?.prices.map(([, price]) => price) ?? [],
-        borderColor: 'rgba(255, 255, 255, 0.8)',
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        pointBackgroundColor: 'rgba(255, 255, 255, 0.8)',
-        pointBorderColor: 'rgba(255, 255, 255, 0.8)',
+        borderColor: "rgba(255, 255, 255, 0.8)",
+        backgroundColor: "rgba(255, 255, 255, 0.1)",
+        pointBackgroundColor: "rgba(255, 255, 255, 0.8)",
+        pointBorderColor: "rgba(255, 255, 255, 0.8)",
         pointRadius: 0,
         pointHitRadius: 10,
         pointHoverRadius: 4,
-        pointHoverBackgroundColor: '#ffffff',
-        pointHoverBorderColor: '#ffffff',
+        pointHoverBackgroundColor: "#ffffff",
+        pointHoverBorderColor: "#ffffff",
         fill: true,
         tension: 0.4,
         borderWidth: 2,
-      }
-    ]
+      },
+    ],
   };
 
-  const options: ChartOptions<'line'> = {
+  const options: ChartOptions<"line"> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false
+        display: false,
       },
       tooltip: {
-        mode: 'index',
+        mode: "index",
         intersect: false,
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        titleColor: '#000000',
-        bodyColor: '#000000',
+        backgroundColor: "rgba(255, 255, 255, 0.9)",
+        titleColor: "#000000",
+        bodyColor: "#000000",
         titleFont: {
-          size: 14
+          size: 14,
         },
         bodyFont: {
-          size: 14
+          size: 14,
         },
         padding: 12,
         displayColors: false,
@@ -648,77 +664,77 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
           title: (context) => {
             const timestamp = priceData!.prices[context[0].dataIndex][0];
             const date = new Date(timestamp);
-            if (timeframe === '24h') {
-              return date.toLocaleString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true
+            if (timeframe === "24h") {
+              return date.toLocaleString("en-US", {
+                month: "short",
+                day: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
               });
             }
-            if (timeframe === '7d') {
-              return date.toLocaleString('en-US', {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true
+            if (timeframe === "7d") {
+              return date.toLocaleString("en-US", {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
               });
             }
-            return date.toLocaleDateString('en-US', {
-              weekday: 'short',
-              month: 'short',
-              day: 'numeric',
-              year: timeframe === '365d' ? '2-digit' : undefined
+            return date.toLocaleDateString("en-US", {
+              weekday: "short",
+              month: "short",
+              day: "numeric",
+              year: timeframe === "365d" ? "2-digit" : undefined,
             });
           },
           label: (context) => {
-            return new Intl.NumberFormat('en-US', {
-              style: 'currency',
-              currency: 'USD',
+            return new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
               minimumFractionDigits: 0,
-              maximumFractionDigits: 0
+              maximumFractionDigits: 0,
             }).format(context.parsed.y);
-          }
-        }
-      }
+          },
+        },
+      },
     },
     scales: {
       x: {
         ticks: {
-          color: 'rgba(255, 255, 255, 0.7)',
+          color: "rgba(255, 255, 255, 0.7)",
           font: {
-            size: 10
+            size: 10,
           },
           maxRotation: 45,
-          minRotation: 45
+          minRotation: 45,
         },
         grid: {
-          display: false
-        }
+          display: false,
+        },
       },
       y: {
         ticks: {
-          color: 'rgba(255, 255, 255, 0.7)',
+          color: "rgba(255, 255, 255, 0.7)",
           font: {
-            size: 12
+            size: 12,
           },
           callback: (value) => {
-            return new Intl.NumberFormat('en-US', {
-              style: 'currency',
-              currency: 'USD',
+            return new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
               minimumFractionDigits: 0,
-              maximumFractionDigits: 0
+              maximumFractionDigits: 0,
             }).format(value as number);
-          }
+          },
         },
         grid: {
-          color: 'rgba(255, 255, 255, 0.1)'
-        }
-      }
-    }
+          color: "rgba(255, 255, 255, 0.1)",
+        },
+      },
+    },
   };
 
   return (
@@ -726,10 +742,7 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
       <ChartHeader>
         <HeaderTop>
           <TitleGroup>
-            <BitcoinLogo 
-              src={BitcoinLogoSrc} 
-              alt="Bitcoin logo"
-            />
+            <BitcoinLogo src={BitcoinLogoSrc} alt="Bitcoin logo" />
             <Title>BTC/USD Live</Title>
           </TitleGroup>
           <PriceDisplay
@@ -738,54 +751,24 @@ const BitcoinTrend: React.FC<BitcoinTrendProps> = ({ id }) => {
             transition={{ duration: 0.3 }}
           >
             <CurrentPrice>
-              ${currentPrice?.toLocaleString(undefined, {
+              $
+              {currentPrice?.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                maximumFractionDigits: 2,
               })}
             </CurrentPrice>
             {priceChange && (
               <PriceChange isPositive={priceChange.value >= 0}>
-                {priceChange.value >= 0 ? '↑' : '↓'}
+                {priceChange.value >= 0 ? "↑" : "↓"}
                 {Math.abs(priceChange.percentage).toFixed(2)}%
-                <span style={{ opacity: 0.7, fontSize: '0.9em' }}>
+                <span style={{ opacity: 0.7, fontSize: "0.9em" }}>
                   ({timeframe})
                 </span>
               </PriceChange>
             )}
           </PriceDisplay>
         </HeaderTop>
-        <TimeframeContainer>
-          {(Object.keys(timeframeMap) as Timeframe[]).map((tf) => (
-            <TimeframeButton
-              key={tf}
-              active={timeframe === tf}
-              onClick={() => setTimeframe(tf)}
-              disabled={loading}
-              aria-label={`Show ${tf} chart`}
-            >
-              {tf.toUpperCase()}
-            </TimeframeButton>
-          ))}
-        </TimeframeContainer>
       </ChartHeader>
-      <ChartContainer
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.1 }}
-      >
-        {loading ? (
-          <LoadingOverlay
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.2 }}
-          >
-            <LoadingSpinner />
-            <LoadingText>Loading Bitcoin price data...</LoadingText>
-          </LoadingOverlay>
-        ) : (
-          <Line data={chartData} options={options} />
-        )}
-      </ChartContainer>
     </Container>
   );
 };
