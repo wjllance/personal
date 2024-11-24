@@ -14,7 +14,7 @@ import {
 
 const SolanaTools: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"balance" | "transactions">(
-    "balance"
+    "transactions"
   );
 
   return (

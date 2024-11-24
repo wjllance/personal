@@ -54,9 +54,9 @@ const RaydiumTransactionFilter: React.FC = () => {
 
       const raydiumTransactions = block.transactions
         .filter((tx) => {
-          const programIds = (
-            tx.transaction.message as Message
-          ).accountKeys?.map((key) => key.toString());
+          const programIds = tx.transaction.message.staticAccountKeys?.map(
+            (key) => key.toString()
+          );
           return programIds?.some((id) => RAYDIUM_PROGRAM_IDS.includes(id));
         })
         .map((tx) => {
@@ -236,25 +236,48 @@ const RaydiumTransactionFilter: React.FC = () => {
 
   return (
     <Section
-      style={{ background: "#13141b", padding: "24px", borderRadius: "16px" }}
+      style={{
+        background: "#ffffff",
+        padding: "24px",
+        borderRadius: "16px",
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
+      }}
     >
-      <h2 style={{ color: "#fff", marginBottom: "24px" }}>
+      <h2
+        style={{
+          color: "#111827",
+          marginBottom: "24px",
+          fontSize: "24px",
+          fontWeight: "600",
+        }}
+      >
         Raydium Transaction Filter
       </h2>
 
-      <Label style={{ color: "#fff" }}>Block Number</Label>
+      <Label
+        style={{
+          color: "#4B5563",
+          fontSize: "14px",
+          fontWeight: "500",
+          marginBottom: "8px",
+        }}
+      >
+        Block Number
+      </Label>
       <Input
         type="number"
         placeholder="Enter block number"
         value={blockNumber}
         onChange={(e) => setBlockNumber(e.target.value)}
         style={{
-          background: "#20212c",
-          border: "1px solid #2d2e3d",
+          background: "#F9FAFB",
+          border: "1px solid #E5E7EB",
           borderRadius: "8px",
-          color: "#fff",
+          color: "#111827",
           padding: "10px",
           marginBottom: "16px",
+          width: "100%",
+          fontSize: "14px",
         }}
       />
 
@@ -265,12 +288,15 @@ const RaydiumTransactionFilter: React.FC = () => {
         onClick={getRaydiumTransactions}
         disabled={!blockNumber || loading}
         style={{
-          background: "linear-gradient(45deg, #1890ff, #1554c0)",
+          background: "linear-gradient(45deg, #3B82F6, #2563EB)",
           border: "none",
           borderRadius: "8px",
           color: "#fff",
-          padding: "12px",
+          padding: "12px 24px",
+          fontSize: "14px",
+          fontWeight: "500",
           opacity: !blockNumber || loading ? 0.7 : 1,
+          cursor: !blockNumber || loading ? "not-allowed" : "pointer",
         }}
       >
         {loading ? (
@@ -278,6 +304,13 @@ const RaydiumTransactionFilter: React.FC = () => {
             as={motion.div}
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            style={{
+              width: "20px",
+              height: "20px",
+              border: "2px solid rgba(255, 255, 255, 0.3)",
+              borderTop: "2px solid #fff",
+              borderRadius: "50%",
+            }}
           />
         ) : (
           "Get Raydium Transactions"
@@ -288,10 +321,10 @@ const RaydiumTransactionFilter: React.FC = () => {
         <Result
           error
           style={{
-            background: "#2d1f1f",
-            border: "1px solid #ff4d4f",
+            background: "#FEF2F2",
+            border: "1px solid #FCA5A5",
             borderRadius: "8px",
-            color: "#ff4d4f",
+            color: "#DC2626",
             padding: "16px",
             marginTop: "16px",
             fontSize: "14px",
@@ -302,7 +335,7 @@ const RaydiumTransactionFilter: React.FC = () => {
       )}
 
       {transactions.length > 0 && (
-        <TransactionList>
+        <TransactionList style={{ marginTop: "24px" }}>
           {transactions.map((tx, index) => (
             <TransactionItem
               key={tx.transaction.signatures[0]}
@@ -311,11 +344,12 @@ const RaydiumTransactionFilter: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
               style={{
-                background: "#1a1b23",
+                background: "#FFFFFF",
                 borderRadius: "12px",
-                border: "1px solid #2d2e3d",
+                border: "1px solid #E5E7EB",
                 overflow: "hidden",
                 marginBottom: "16px",
+                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
               }}
             >
               <TransactionHeader
@@ -324,27 +358,31 @@ const RaydiumTransactionFilter: React.FC = () => {
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  borderBottom: "1px solid #2d2e3d",
-                  background: "#20212c",
+                  borderBottom: "1px solid #E5E7EB",
+                  background: "#F9FAFB",
                 }}
               >
                 <div
-                  style={{ display: "flex", alignItems: "center", gap: "16px" }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "16px",
+                  }}
                 >
                   <div
                     style={{
                       width: "8px",
                       height: "8px",
                       borderRadius: "50%",
-                      background: tx.meta?.err ? "#ff4d4f" : "#52c41a",
+                      background: tx.meta?.err ? "#DC2626" : "#059669",
                       boxShadow: tx.meta?.err
-                        ? "0 0 8px rgba(255, 77, 79, 0.5)"
-                        : "0 0 8px rgba(82, 196, 26, 0.5)",
+                        ? "0 0 8px rgba(220, 38, 38, 0.3)"
+                        : "0 0 8px rgba(5, 150, 105, 0.3)",
                     }}
                   />
                   <span
                     style={{
-                      color: "#fff",
+                      color: "#111827",
                       fontSize: "14px",
                       fontWeight: "500",
                     }}
@@ -352,16 +390,38 @@ const RaydiumTransactionFilter: React.FC = () => {
                     {new Date((tx.blockTime || 0) * 1000).toLocaleString()}
                   </span>
                 </div>
+                <div>
+                  <span style={{ color: "#6B7280" }}>Signature: </span>
+                  <a
+                    href={`https://solscan.io/tx/${tx.transaction.signatures[0]}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: "#3B82F6",
+                      textDecoration: "none",
+                      fontFamily: "monospace",
+                      wordBreak: "break-all",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.textDecoration = "underline")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.textDecoration = "none")
+                    }
+                  >
+                    {formatAddress(tx.transaction.signatures[0])}
+                  </a>
+                </div>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   style={{
-                    background: "#2d2e3d",
+                    background: "#F3F4F6",
                     border: "none",
                     borderRadius: "8px",
                     cursor: "pointer",
                     padding: "8px",
-                    color: "#fff",
+                    color: "#4B5563",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -386,7 +446,7 @@ const RaydiumTransactionFilter: React.FC = () => {
                 style={{
                   display: "none",
                   padding: "16px",
-                  background: "#1a1b23",
+                  background: "#FFFFFF",
                 }}
               >
                 <div
@@ -397,23 +457,23 @@ const RaydiumTransactionFilter: React.FC = () => {
                     fontSize: "14px",
                   }}
                 >
-                  <div style={{ color: "#8b8c9b" }}>Status:</div>
+                  <div style={{ color: "#6B7280" }}>Status:</div>
                   <div
                     style={{
-                      color: tx.meta?.err ? "#ff4d4f" : "#52c41a",
+                      color: tx.meta?.err ? "#DC2626" : "#059669",
                       fontWeight: "500",
                     }}
                   >
                     {tx.meta?.err ? "Failed" : "Success"}
                   </div>
 
-                  <div style={{ color: "#8b8c9b" }}>Signature:</div>
+                  <div style={{ color: "#6B7280" }}>Signer:</div>
                   <a
-                    href={`https://solscan.io/tx/${tx.transaction.signatures[0]}`}
+                    href={`https://solscan.io/account/${tx.transaction.message.staticAccountKeys[0].toString()}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
-                      color: "#1890ff",
+                      color: "#3B82F6",
                       textDecoration: "none",
                       fontFamily: "monospace",
                       wordBreak: "break-all",
@@ -425,44 +485,19 @@ const RaydiumTransactionFilter: React.FC = () => {
                       (e.currentTarget.style.textDecoration = "none")
                     }
                   >
-                    {tx.transaction.signatures[0]}
-                  </a>
-
-                  <div style={{ color: "#8b8c9b" }}>Signer:</div>
-                  <a
-                    href={`https://solscan.io/account/${(
-                      tx.transaction.message as Message
-                    ).accountKeys[0].toString()}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      color: "#1890ff",
-                      textDecoration: "none",
-                      fontFamily: "monospace",
-                      wordBreak: "break-all",
-                    }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.textDecoration = "underline")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.textDecoration = "none")
-                    }
-                  >
-                    {(
-                      tx.transaction.message as Message
-                    ).accountKeys[0].toString()}
+                    {tx.transaction.message.staticAccountKeys[0].toString()}
                   </a>
 
                   {tx.meta?.fee && (
                     <>
-                      <div style={{ color: "#8b8c9b" }}>Fee:</div>
-                      <div style={{ color: "#fff" }}>
+                      <div style={{ color: "#6B7280" }}>Fee:</div>
+                      <div style={{ color: "#111827" }}>
                         {(tx.meta.fee / 1e9).toFixed(6)} SOL
                       </div>
                     </>
                   )}
                 </div>
-                <div style={{ marginTop: "16px", color: "#fff" }}>
+                <div style={{ marginTop: "16px", color: "#111827" }}>
                   {renderTransferInfo(tx)}
                 </div>
               </TransactionDetails>

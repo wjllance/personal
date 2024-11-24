@@ -56,12 +56,12 @@ export const parseTokenTransfers = (
 
   console.log("parseTokenTransfers:", transaction);
   const transfers: TokenTransfer[] = [];
-  const message = transaction.transaction.message as Message;
+  const message = transaction.transaction.message;
   const postTokenBalances = transaction.meta?.postTokenBalances || [];
   const preTokenBalances = transaction.meta?.preTokenBalances || [];
 
   // Get the transaction initiator (first signer)
-  const initiator = message.accountKeys[0].toString();
+  const initiator = message.staticAccountKeys[0]!.toString();
 
   console.log("Transaction initiator:", initiator);
   console.log("Pre balances:", preTokenBalances);
