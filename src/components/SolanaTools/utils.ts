@@ -180,6 +180,48 @@ export const parseTokenTransfers = (
   return transfers;
 };
 
+export async function fetchRaydiumTransactions(blockNumber: string | number) {
+  try {
+    const connection = getConnection();
+    const block = await connection.getBlock(Number(blockNumber), {
+      maxSupportedTransactionVersion: 0,
+      rewards: false,
+    });
+
+    if (!block) {
+      throw new Error("Block not found");
+    }
+
+    const raydiumTransactions = block.transactions
+      .filter((tx) => {
+        const programIds = tx.transaction.message.staticAccountKeys?.map(
+          (key) => key.toString()
+        );
+        return programIds?.some((id) => RAYDIUM_PROGRAM_IDS.includes(id));
+      })
+      .map((tx) => {
+        return {
+          ...tx,
+          slot: block.parentSlot,
+          blockTime: block.blockTime,
+        } as VersionedTransactionResponse;
+      });
+
+    return {
+      success: true,
+      data: raydiumTransactions,
+      error: null
+    };
+  } catch (error) {
+    console.error("Error fetching Raydium transactions:", error);
+    return {
+      success: false,
+      data: [],
+      error: error instanceof Error ? error.message : "An error occurred"
+    };
+  }
+}
+
 export const formatAddress = (address: string): string => {
   if (address === "new") return "new";
   return `${address.slice(0, 8)}...${address.slice(-8)}`;

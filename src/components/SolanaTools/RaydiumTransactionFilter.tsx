@@ -26,6 +26,7 @@ import {
   RAYDIUM_PROGRAM_IDS,
   parseTokenTransfers,
   formatAddress,
+  fetchRaydiumTransactions,
 } from "./utils";
 
 const RaydiumTransactionFilter: React.FC = () => {
@@ -37,45 +38,24 @@ const RaydiumTransactionFilter: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const getRaydiumTransactions = async () => {
+    setLoading(true);
+    setError(null);
+    setTransactions([]);
+
     try {
-      setError(null);
-      setLoading(true);
-      setTransactions([]);
+      const result = await fetchRaydiumTransactions(blockNumber);
 
-      const connection = getConnection();
-      const block = await connection.getBlock(parseInt(blockNumber), {
-        maxSupportedTransactionVersion: 0,
-        rewards: false,
-      });
-
-      if (!block) {
-        throw new Error("Block not found");
+      if (!result.success) {
+        throw new Error(result.error || "Failed to fetch transactions");
       }
 
-      const raydiumTransactions = block.transactions
-        .filter((tx) => {
-          const programIds = tx.transaction.message.staticAccountKeys?.map(
-            (key) => key.toString()
-          );
-          return programIds?.some((id) => RAYDIUM_PROGRAM_IDS.includes(id));
-        })
-        .map((tx) => {
-          return {
-            ...tx,
-            slot: block.parentSlot,
-            blockTime: block.blockTime,
-          } as VersionedTransactionResponse;
-        });
-
-      setTransactions(raydiumTransactions);
-      if (raydiumTransactions.length === 0) {
+      setTransactions(result.data);
+      if (result.data.length === 0) {
         setError("No Raydium transactions found in this block");
       }
-    } catch (err) {
-      console.error(err);
-      setError(
-        err instanceof Error ? err.message : "Failed to fetch transactions"
-      );
+    } catch (error) {
+      console.error("Error:", error);
+      setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
       setLoading(false);
     }
