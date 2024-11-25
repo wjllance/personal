@@ -76,13 +76,12 @@ const RaydiumTransactionFilter: React.FC = () => {
       (t) => t.type === "out" && RAYDIUM_PROGRAM_IDS.includes(t.from)
     )[0];
 
-    // Only consider the most simple case of a single in/out transfer
-    const swaps =
+    const swaps = // the transfer is for raydium, so swap the in / out transfers
       inTransfer && outTransfer
         ? [
             {
-              in: inTransfer,
-              out: outTransfer,
+              in: outTransfer,
+              out: inTransfer,
             },
           ]
         : [];
