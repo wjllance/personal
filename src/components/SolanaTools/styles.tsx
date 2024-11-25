@@ -174,7 +174,7 @@ export const Button = styled(motion.button)`
 
 export const TransactionList = styled.div`
   margin-top: 1rem;
-  max-height: 400px;
+  max-height: 700px;
   overflow-y: auto;
 `;
 
