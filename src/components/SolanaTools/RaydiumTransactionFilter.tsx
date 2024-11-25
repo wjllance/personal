@@ -117,11 +117,25 @@ const RaydiumTransactionFilter: React.FC = () => {
           >
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <span style={{ color: "#4A5568", fontWeight: "500" }}>Swap:</span>
-              <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#e53e3e" }}>
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  color: "#e53e3e",
+                }}
+              >
                 {swap.out.amount.toFixed(6)} {swap.out.token}
               </span>
               <span style={{ color: "#4A5568" }}>→</span>
-              <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#38a169" }}>
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  color: "#38a169",
+                }}
+              >
                 {swap.in.amount.toFixed(6)} {swap.in.token}
               </span>
             </div>
@@ -129,39 +143,41 @@ const RaydiumTransactionFilter: React.FC = () => {
         ))}
 
         {/* Show remaining transfers that weren't part of swaps */}
-        {transfers
-          .filter((t) => !swaps.some((s) => s.in === t || s.out === t))
-          .map((transfer, index) => (
-            <div
-              key={`transfer-${index}`}
-              style={{
-                marginTop: "4px",
-                padding: "6px 12px",
-                background:
-                  transfer.type === "in"
-                    ? "rgba(56, 161, 105, 0.05)"
-                    : "rgba(229, 62, 62, 0.05)",
-                borderRadius: "6px",
-                border: `1px solid ${
-                  transfer.type === "in"
-                    ? "rgba(56, 161, 105, 0.2)"
-                    : "rgba(229, 62, 62, 0.2)"
-                }`,
-                fontSize: "13px",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                color: transfer.type === "in" ? "#38a169" : "#e53e3e",
-              }}
-            >
-              <span style={{ color: "#4A5568", fontWeight: "500" }}>
-                {transfer.type === "in" ? "Received:" : "Sent:"}
-              </span>
-              <span style={{ fontWeight: "500" }}>
-                {transfer.amount.toFixed(6)} {transfer.token}
-              </span>
-            </div>
-          ))}
+        <div style={{ display: "none" }}>
+          {transfers
+            .filter((t) => !swaps.some((s) => s.in === t || s.out === t))
+            .map((transfer, index) => (
+              <div
+                key={`transfer-${index}`}
+                style={{
+                  marginTop: "4px",
+                  padding: "6px 12px",
+                  background:
+                    transfer.type === "in"
+                      ? "rgba(56, 161, 105, 0.05)"
+                      : "rgba(229, 62, 62, 0.05)",
+                  borderRadius: "6px",
+                  border: `1px solid ${
+                    transfer.type === "in"
+                      ? "rgba(56, 161, 105, 0.2)"
+                      : "rgba(229, 62, 62, 0.2)"
+                  }`,
+                  fontSize: "13px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  color: transfer.type === "in" ? "#38a169" : "#e53e3e",
+                }}
+              >
+                <span style={{ color: "#4A5568", fontWeight: "500" }}>
+                  {transfer.type === "in" ? "Received:" : "Sent:"}
+                </span>
+                <span style={{ fontWeight: "500" }}>
+                  {transfer.amount.toFixed(6)} {transfer.token}
+                </span>
+              </div>
+            ))}
+        </div>
       </div>
     );
   };
@@ -290,27 +306,45 @@ const RaydiumTransactionFilter: React.FC = () => {
                   background: "#FFFFFF",
                 }}
               >
-                <div style={{ 
-                  display: "flex", 
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                  gap: "16px"
-                }}>
-                  <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "8px",
+                    gap: "16px",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "12px",
+                      alignItems: "center",
+                    }}
+                  >
                     <div
                       style={{
                         width: "6px",
                         height: "6px",
                         borderRadius: "50%",
-                        background: tx.transaction.meta?.err ? "#DC2626" : "#059669",
+                        background: tx.transaction.meta?.err
+                          ? "#DC2626"
+                          : "#059669",
                         boxShadow: tx.transaction.meta?.err
                           ? "0 0 6px rgba(220, 38, 38, 0.3)"
                           : "0 0 6px rgba(5, 150, 105, 0.3)",
                       }}
                     />
-                    <span style={{ color: "#111827", fontWeight: "500", fontSize: "13px" }}>
-                      {new Date((tx.transaction.blockTime || 0) * 1000).toLocaleString()}
+                    <span
+                      style={{
+                        color: "#111827",
+                        fontWeight: "500",
+                        fontSize: "13px",
+                      }}
+                    >
+                      {new Date(
+                        (tx.transaction.blockTime || 0) * 1000
+                      ).toLocaleString()}
                     </span>
                     <span
                       style={{
@@ -323,8 +357,16 @@ const RaydiumTransactionFilter: React.FC = () => {
                     </span>
                     {tx.transaction.meta?.fee && (
                       <>
-                        <span style={{ color: "#6B7280", fontSize: "13px" }}>Fee:</span>
-                        <span style={{ color: "#111827", fontFamily: "monospace", fontSize: "13px" }}>
+                        <span style={{ color: "#6B7280", fontSize: "13px" }}>
+                          Fee:
+                        </span>
+                        <span
+                          style={{
+                            color: "#111827",
+                            fontFamily: "monospace",
+                            fontSize: "13px",
+                          }}
+                        >
                           {(tx.transaction.meta.fee / 1e9).toFixed(6)} SOL
                         </span>
                       </>
