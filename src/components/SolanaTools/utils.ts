@@ -90,37 +90,35 @@ export const parseTokenTransfers = (
     processedAccounts.add(key);
 
     const post = postBalanceMap.get(key);
-    if (post) {
-      const preAmount = pre.uiTokenAmount.uiAmount || 0;
-      const postAmount = post.uiTokenAmount.uiAmount || 0;
-      const change = postAmount - preAmount;
-      if (change === 0) {
-        return;
-      }
-
-      // Filter out dust
-      const address = pre.owner!;
-
-      const tokenSymbol =
-        TOKEN_ADDRESSES[pre.mint] || pre.mint.slice(0, 8) + "...";
-
-      // Only record if the initiator is involved
-      transfers.push({
-        from: address,
-        to: address,
-        amount: Math.abs(change),
-        token: tokenSymbol,
-        mint: pre.mint,
-        type: change > 0 ? "in" : "out",
-      });
-
-      console.log("Found transfer:", {
-        address,
-        change,
-        token: tokenSymbol,
-        type: change > 0 ? "in" : "out",
-      });
+    const preAmount = pre.uiTokenAmount.uiAmount || 0;
+    const postAmount = post?.uiTokenAmount.uiAmount || 0;
+    const change = postAmount - preAmount;
+    if (change === 0) {
+      return;
     }
+
+    // Filter out dust
+    const address = pre.owner!;
+
+    const tokenSymbol =
+      TOKEN_ADDRESSES[pre.mint] || pre.mint.slice(0, 8) + "...";
+
+    // Only record if the initiator is involved
+    transfers.push({
+      from: address,
+      to: address,
+      amount: Math.abs(change),
+      token: tokenSymbol,
+      mint: pre.mint,
+      type: change > 0 ? "in" : "out",
+    });
+
+    console.log("Found transfer:", {
+      address,
+      change,
+      token: tokenSymbol,
+      type: change > 0 ? "in" : "out",
+    });
   });
 
   // Process new appearances in post balances
@@ -134,7 +132,7 @@ export const parseTokenTransfers = (
           TOKEN_ADDRESSES[post.mint] || post.mint.slice(0, 8) + "...";
 
         transfers.push({
-          from: "new",
+          from: address,
           to: address,
           amount,
           token: tokenSymbol,
@@ -210,6 +208,6 @@ export async function fetchRaydiumTransactions(blockNumber: string | number) {
 }
 
 export const formatAddress = (address: string): string => {
-  if (address === "new") return "new";
-  return `${address.slice(0, 8)}...${address.slice(-8)}`;
+  return address;
+  //   return `${address.slice(0, 8)}...${address.slice(-8)}`;
 };

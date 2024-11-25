@@ -65,23 +65,8 @@ const RaydiumTransactionFilter: React.FC = () => {
 
   const renderTransferInfo = (transfers: TokenTransfer[]) => {
     if (transfers.length === 0) {
-      return (
-        <div
-          style={{
-            color: "#718096",
-            fontStyle: "italic",
-            padding: "12px",
-            background: "rgba(160, 174, 192, 0.1)",
-            borderRadius: "8px",
-            textAlign: "center",
-          }}
-        >
-          No token transfers found in this transaction
-        </div>
-      );
+      return null;
     }
-
-    console.log("transfers", transfers);
 
     // Group transfers by type (in/out)
     const inTransfer = transfers.filter(
@@ -101,6 +86,10 @@ const RaydiumTransactionFilter: React.FC = () => {
             },
           ]
         : [];
+
+    const owner = transfers.filter(
+      (t) => !RAYDIUM_PROGRAM_IDS.includes(t.from)
+    )[0]?.from;
 
     return (
       <div style={{ marginTop: "8px" }}>
@@ -138,46 +127,28 @@ const RaydiumTransactionFilter: React.FC = () => {
               >
                 {swap.in.amount.toFixed(6)} {swap.in.token}
               </span>
+              <div style={{ flex: "1" }} />
+
+              {owner && (
+                <>
+                  by:
+                  <a
+                    href={`https://solscan.io/account/${owner}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: "#3B82F6",
+                      textDecoration: "none",
+                      fontFamily: "monospace",
+                    }}
+                  >
+                    {formatAddress(owner)}
+                  </a>
+                </>
+              )}
             </div>
           </div>
         ))}
-
-        {/* Show remaining transfers that weren't part of swaps */}
-        <div style={{ display: "none" }}>
-          {transfers
-            .filter((t) => !swaps.some((s) => s.in === t || s.out === t))
-            .map((transfer, index) => (
-              <div
-                key={`transfer-${index}`}
-                style={{
-                  marginTop: "4px",
-                  padding: "6px 12px",
-                  background:
-                    transfer.type === "in"
-                      ? "rgba(56, 161, 105, 0.05)"
-                      : "rgba(229, 62, 62, 0.05)",
-                  borderRadius: "6px",
-                  border: `1px solid ${
-                    transfer.type === "in"
-                      ? "rgba(56, 161, 105, 0.2)"
-                      : "rgba(229, 62, 62, 0.2)"
-                  }`,
-                  fontSize: "13px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  color: transfer.type === "in" ? "#38a169" : "#e53e3e",
-                }}
-              >
-                <span style={{ color: "#4A5568", fontWeight: "500" }}>
-                  {transfer.type === "in" ? "Received:" : "Sent:"}
-                </span>
-                <span style={{ fontWeight: "500" }}>
-                  {transfer.amount.toFixed(6)} {transfer.token}
-                </span>
-              </div>
-            ))}
-        </div>
       </div>
     );
   };
@@ -355,43 +326,34 @@ const RaydiumTransactionFilter: React.FC = () => {
                     >
                       {tx.transaction.meta?.err ? "Failed" : "Success"}
                     </span>
-                    {tx.transaction.meta?.fee && (
-                      <>
-                        <span style={{ color: "#6B7280", fontSize: "13px" }}>
-                          Fee:
-                        </span>
-                        <span
-                          style={{
-                            color: "#111827",
-                            fontFamily: "monospace",
-                            fontSize: "13px",
-                          }}
-                        >
-                          {(tx.transaction.meta.fee / 1e9).toFixed(6)} SOL
-                        </span>
-                      </>
-                    )}
                   </div>
-                  <div style={{ fontSize: "13px", whiteSpace: "nowrap" }}>
-                    <a
-                      href={`https://solscan.io/tx/${tx.transaction.transaction.signatures[0]}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        color: "#3B82F6",
-                        textDecoration: "none",
-                        fontFamily: "monospace",
-                      }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.textDecoration = "underline")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.textDecoration = "none")
-                      }
-                    >
-                      {formatAddress(tx.transaction.transaction.signatures[0])}
-                    </a>
-                  </div>
+                </div>
+                <div
+                  style={{
+                    color: "#6B7280",
+                    fontSize: "13px",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Signature:
+                  <a
+                    href={`https://solscan.io/tx/${tx.transaction.transaction.signatures[0]}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: "#3B82F6",
+                      textDecoration: "none",
+                      fontFamily: "monospace",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.textDecoration = "underline")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.textDecoration = "none")
+                    }
+                  >
+                    {formatAddress(tx.transaction.transaction.signatures[0])}
+                  </a>
                 </div>
                 <div style={{ color: "#111827", fontSize: "13px" }}>
                   {renderTransferInfo(tx.transfers)}
