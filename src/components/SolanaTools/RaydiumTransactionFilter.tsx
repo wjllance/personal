@@ -337,159 +337,77 @@ const RaydiumTransactionFilter: React.FC = () => {
                 boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
               }}
             >
-              <TransactionHeader
+              <div
                 style={{
-                  padding: "16px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  borderBottom: "1px solid #E5E7EB",
-                  background: "#F9FAFB",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "16px",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "8px",
-                      height: "8px",
-                      borderRadius: "50%",
-                      background: tx.transaction.meta?.err
-                        ? "#DC2626"
-                        : "#059669",
-                      boxShadow: tx.transaction.meta?.err
-                        ? "0 0 8px rgba(220, 38, 38, 0.3)"
-                        : "0 0 8px rgba(5, 150, 105, 0.3)",
-                    }}
-                  />
-                  <span
-                    style={{
-                      color: "#111827",
-                      fontSize: "14px",
-                      fontWeight: "500",
-                    }}
-                  >
-                    {new Date(
-                      (tx.transaction.blockTime || 0) * 1000
-                    ).toLocaleString()}
-                  </span>
-                </div>
-                <div>
-                  <span style={{ color: "#6B7280" }}>Signature: </span>
-                  <a
-                    href={`https://solscan.io/tx/${tx.transaction.transaction.signatures[0]}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      color: "#3B82F6",
-                      textDecoration: "none",
-                      fontFamily: "monospace",
-                      wordBreak: "break-all",
-                    }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.textDecoration = "underline")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.textDecoration = "none")
-                    }
-                  >
-                    {formatAddress(tx.transaction.transaction.signatures[0])}
-                  </a>
-                </div>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  style={{
-                    background: "#F3F4F6",
-                    border: "none",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    padding: "8px",
-                    color: "#4B5563",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: "32px",
-                    height: "32px",
-                  }}
-                  onClick={() => {
-                    const details = document.getElementById(
-                      `tx-details-${tx.transaction.transaction.signatures[0]}`
-                    );
-                    if (details) {
-                      details.style.display =
-                        details.style.display === "none" ? "block" : "none";
-                    }
-                  }}
-                >
-                  <span style={{ fontSize: "16px" }}>↓</span>
-                </motion.button>
-              </TransactionHeader>
-              <TransactionDetails
-                id={`tx-details-${tx.transaction.transaction.signatures[0]}`}
-                style={{
-                  // display: "none",
-                  padding: "16px",
+                  padding: "12px",
                   background: "#FFFFFF",
                 }}
               >
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "auto 1fr",
-                    gap: "12px 16px",
-                    fontSize: "14px",
-                  }}
-                >
-                  <div style={{ color: "#6B7280" }}>Status:</div>
-                  <div
-                    style={{
-                      color: tx.transaction.meta?.err ? "#DC2626" : "#059669",
-                      fontWeight: "500",
-                    }}
-                  >
-                    {tx.transaction.meta?.err ? "Failed" : "Success"}
+                <div style={{ 
+                  display: "flex", 
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "8px",
+                  gap: "16px"
+                }}>
+                  <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                    <div
+                      style={{
+                        width: "6px",
+                        height: "6px",
+                        borderRadius: "50%",
+                        background: tx.transaction.meta?.err ? "#DC2626" : "#059669",
+                        boxShadow: tx.transaction.meta?.err
+                          ? "0 0 6px rgba(220, 38, 38, 0.3)"
+                          : "0 0 6px rgba(5, 150, 105, 0.3)",
+                      }}
+                    />
+                    <span style={{ color: "#111827", fontWeight: "500", fontSize: "13px" }}>
+                      {new Date((tx.transaction.blockTime || 0) * 1000).toLocaleString()}
+                    </span>
+                    <span
+                      style={{
+                        color: tx.transaction.meta?.err ? "#DC2626" : "#059669",
+                        fontWeight: "500",
+                        fontSize: "13px",
+                      }}
+                    >
+                      {tx.transaction.meta?.err ? "Failed" : "Success"}
+                    </span>
+                    {tx.transaction.meta?.fee && (
+                      <>
+                        <span style={{ color: "#6B7280", fontSize: "13px" }}>Fee:</span>
+                        <span style={{ color: "#111827", fontFamily: "monospace", fontSize: "13px" }}>
+                          {(tx.transaction.meta.fee / 1e9).toFixed(6)} SOL
+                        </span>
+                      </>
+                    )}
                   </div>
-
-                  {/* <div style={{ color: "#6B7280" }}>Signer:</div>
-                  <a
-                    href={`https://solscan.io/account/${tx.transaction.transaction.message.staticAccountKeys[0].toString()}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      color: "#3B82F6",
-                      textDecoration: "none",
-                      fontFamily: "monospace",
-                      wordBreak: "break-all",
-                    }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.textDecoration = "underline")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.textDecoration = "none")
-                    }
-                  >
-                    {tx.transaction.transaction.message.staticAccountKeys[0].toString()}
-                  </a> */}
-
-                  {tx.transaction.meta?.fee && (
-                    <>
-                      <div style={{ color: "#6B7280" }}>Fee:</div>
-                      <div style={{ color: "#111827" }}>
-                        {(tx.transaction.meta.fee / 1e9).toFixed(6)} SOL
-                      </div>
-                    </>
-                  )}
+                  <div style={{ fontSize: "13px", whiteSpace: "nowrap" }}>
+                    <a
+                      href={`https://solscan.io/tx/${tx.transaction.transaction.signatures[0]}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: "#3B82F6",
+                        textDecoration: "none",
+                        fontFamily: "monospace",
+                      }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.textDecoration = "underline")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.textDecoration = "none")
+                      }
+                    >
+                      {formatAddress(tx.transaction.transaction.signatures[0])}
+                    </a>
+                  </div>
                 </div>
-                <div style={{ marginTop: "16px", color: "#111827" }}>
+                <div style={{ color: "#111827", fontSize: "13px" }}>
                   {renderTransferInfo(tx.transfers)}
                 </div>
-              </TransactionDetails>
+              </div>
             </TransactionItem>
           ))}
         </TransactionList>

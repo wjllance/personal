@@ -179,11 +179,9 @@ export const TransactionList = styled.div`
 `;
 
 export const TransactionItem = styled.div`
-  padding: 1rem;
   background: rgba(255, 255, 255, 0.03);
   border-radius: 4px;
-  margin-bottom: 0.5rem;
-  font-size: 14px;
+  margin-bottom: 0.25rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
 
   &:hover {
@@ -194,12 +192,14 @@ export const TransactionItem = styled.div`
 export const TransactionHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  align-items: center;
   color: #64ffda;
 `;
 
 export const TransactionDetails = styled.div`
-  font-size: 13px;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
 export const LoadingSpinner = styled(motion.div)`
