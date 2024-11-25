@@ -108,58 +108,23 @@ const RaydiumTransactionFilter: React.FC = () => {
           <div
             key={index}
             style={{
-              marginBottom: "12px",
-              padding: "12px",
-              background: "rgba(76, 175, 80, 0.1)",
-              borderRadius: "8px",
+              padding: "8px 12px",
+              background: "rgba(76, 175, 80, 0.05)",
+              borderRadius: "6px",
               border: "1px solid rgba(76, 175, 80, 0.2)",
+              fontSize: "13px",
             }}
           >
-            <div
-              style={{
-                fontWeight: "600",
-                marginBottom: "8px",
-                color: "#2D3748",
-              }}
-            >
-              Token Swap
-            </div>
-            <div
-              style={{
-                color: "#e53e3e",
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-              }}
-            >
-              <span>Sent:</span>
-              <span style={{ fontWeight: "500" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{ color: "#4A5568", fontWeight: "500" }}>Swap:</span>
+              <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#e53e3e" }}>
                 {swap.out.amount.toFixed(6)} {swap.out.token}
               </span>
-            </div>
-            <div
-              style={{
-                color: "#38a169",
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-              }}
-            >
-              <span>Received:</span>
-              <span style={{ fontWeight: "500" }}>
+              <span style={{ color: "#4A5568" }}>→</span>
+              <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#38a169" }}>
                 {swap.in.amount.toFixed(6)} {swap.in.token}
               </span>
             </div>
-            {/* <div
-              style={{
-                fontSize: "13px",
-                color: "#718096",
-                marginTop: "8px",
-              }}
-            >
-              Rate: 1 {swap.out.token} ={" "}
-              {(swap.in.amount / swap.out.amount).toFixed(6)} {swap.in.token}
-            </div> */}
           </div>
         ))}
 
@@ -170,49 +135,31 @@ const RaydiumTransactionFilter: React.FC = () => {
             <div
               key={`transfer-${index}`}
               style={{
-                marginBottom: "8px",
-                padding: "12px",
+                marginTop: "4px",
+                padding: "6px 12px",
                 background:
                   transfer.type === "in"
-                    ? "rgba(56, 161, 105, 0.1)"
-                    : "rgba(229, 62, 62, 0.1)",
-                borderRadius: "8px",
+                    ? "rgba(56, 161, 105, 0.05)"
+                    : "rgba(229, 62, 62, 0.05)",
+                borderRadius: "6px",
                 border: `1px solid ${
                   transfer.type === "in"
                     ? "rgba(56, 161, 105, 0.2)"
                     : "rgba(229, 62, 62, 0.2)"
                 }`,
+                fontSize: "13px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                color: transfer.type === "in" ? "#38a169" : "#e53e3e",
               }}
             >
-              <div
-                style={{
-                  color: "#2D3748",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                  marginBottom: "4px",
-                }}
-              >
-                <span>{transfer.type === "in" ? "Received" : "Sent"}</span>
-                {transfer.from !== transfer.to && (
-                  <>
-                    <span>{transfer.type === "in" ? "from" : "to"}</span>
-                    <span style={{ fontFamily: "monospace" }}>
-                      {formatAddress(
-                        transfer.type === "in" ? transfer.from : transfer.to
-                      )}
-                    </span>
-                  </>
-                )}
-              </div>
-              <div
-                style={{
-                  color: transfer.type === "in" ? "#38a169" : "#e53e3e",
-                  fontWeight: "500",
-                }}
-              >
+              <span style={{ color: "#4A5568", fontWeight: "500" }}>
+                {transfer.type === "in" ? "Received:" : "Sent:"}
+              </span>
+              <span style={{ fontWeight: "500" }}>
                 {transfer.amount.toFixed(6)} {transfer.token}
-              </div>
+              </span>
             </div>
           ))}
       </div>
