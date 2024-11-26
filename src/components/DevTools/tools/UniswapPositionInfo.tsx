@@ -54,12 +54,16 @@ const ErrorMessage = styled.div`
 const UniswapPositionInfo: React.FC = () => {
   const [positionId, setPositionId] = useState("");
   const [positionInfo, setPositionInfo] = useState<any>(null);
+  const [owner, setOwner] = useState<string | null>(null);
+  const [mintBlock, setMintBlock] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const fetchPositionInfo = async () => {
     setError("");
     setPositionInfo(null);
+    setOwner(null);
+    setMintBlock(null);
     setLoading(true);
 
     try {
@@ -73,8 +77,8 @@ const UniswapPositionInfo: React.FC = () => {
         provider
       );
 
+      // Fetch position details
       const position = await contract.positions(positionId);
-
       const formattedPosition = {
         nonce: position.nonce.toString(),
         operator: position.operator,
@@ -89,6 +93,32 @@ const UniswapPositionInfo: React.FC = () => {
         tokensOwed0: ethers.formatUnits(position.tokensOwed0, 18),
         tokensOwed1: ethers.formatUnits(position.tokensOwed1, 18),
       };
+
+      // Fetch owner
+      try {
+        const currentOwner = await contract.ownerOf(positionId);
+        console.log("Current owner:", currentOwner);
+        setOwner(currentOwner);
+      } catch (err) {
+        console.warn("Failed to fetch owner:", err);
+      }
+
+      // Fetch mint block
+      try {
+        const filter = contract.filters.Transfer(
+          ethers.ZeroAddress,  // from address (null for minting)
+          null,               // to address (any)
+          positionId          // token ID
+        );
+        const events = await contract.queryFilter(filter);
+        if (events.length > 0) {
+          const mintEvent = events[0];
+          setMintBlock(mintEvent.blockNumber);
+          console.log("Mint block:", mintEvent.blockNumber);
+        }
+      } catch (err) {
+        console.warn("Failed to fetch mint block:", err);
+      }
 
       setPositionInfo(formattedPosition);
     } catch (err: any) {
@@ -114,9 +144,21 @@ const UniswapPositionInfo: React.FC = () => {
 
       {error && <ErrorMessage>{error}</ErrorMessage>}
 
-      {positionInfo && (
+      {(positionInfo || owner || mintBlock) && (
         <ResultCard>
-          {Object.entries(positionInfo).map(([key, value]) => (
+          {owner && (
+            <InfoRow>
+              <Label>Owner:</Label>
+              <Value>{owner}</Value>
+            </InfoRow>
+          )}
+          {mintBlock && (
+            <InfoRow>
+              <Label>Mint Block:</Label>
+              <Value>{mintBlock}</Value>
+            </InfoRow>
+          )}
+          {positionInfo && Object.entries(positionInfo).map(([key, value]) => (
             <InfoRow key={key}>
               <Label>{key}:</Label>
               <Value>{value as string}</Value>
