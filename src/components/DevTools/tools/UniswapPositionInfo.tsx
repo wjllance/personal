@@ -73,15 +73,17 @@ const UniswapPositionInfo: React.FC = () => {
   const [positionInfo, setPositionInfo] = useState<any>(null);
   const [owner, setOwner] = useState<string | null>(null);
   const [mintBlock, setMintBlock] = useState<number | null>(null);
+  const [mintTxHash, setMintTxHash] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const fetchMintBlock = async (tokenId: string) => {
+  const fetchMintInfo = async (tokenId: string) => {
     const query = `
       query ($tokenId: String!) {
         position(id: $tokenId) {
           transaction {
             blockNumber
+            id
           }
         }
       }
@@ -101,8 +103,12 @@ const UniswapPositionInfo: React.FC = () => {
     });
 
     const data = await response.json();
-    if (data.data?.position?.transaction?.blockNumber) {
-      return parseInt(data.data.position.transaction.blockNumber);
+    if (data.data?.position?.transaction) {
+      const { blockNumber, id: txHash } = data.data.position.transaction;
+      return {
+        blockNumber: parseInt(blockNumber),
+        txHash
+      };
     }
     return null;
   };
@@ -112,6 +118,7 @@ const UniswapPositionInfo: React.FC = () => {
     setPositionInfo(null);
     setOwner(null);
     setMintBlock(null);
+    setMintTxHash(null);
     setLoading(true);
 
     try {
@@ -151,15 +158,17 @@ const UniswapPositionInfo: React.FC = () => {
         console.warn("Failed to fetch owner:", err);
       }
 
-      // Fetch mint block using subgraph
+      // Fetch mint info using subgraph
       try {
-        const block = await fetchMintBlock(positionId);
-        if (block) {
-          console.log("Mint block:", block);
-          setMintBlock(block);
+        const mintInfo = await fetchMintInfo(positionId);
+        if (mintInfo) {
+          console.log("Mint block:", mintInfo.blockNumber);
+          console.log("Mint transaction:", mintInfo.txHash);
+          setMintBlock(mintInfo.blockNumber);
+          setMintTxHash(mintInfo.txHash);
         }
       } catch (err) {
-        console.warn("Failed to fetch mint block:", err);
+        console.warn("Failed to fetch mint info:", err);
       }
 
       setPositionInfo(formattedPosition);
@@ -170,7 +179,7 @@ const UniswapPositionInfo: React.FC = () => {
     }
   };
 
-  const getEtherscanLink = (type: 'address' | 'block' | 'token', value: string) => {
+  const getEtherscanLink = (type: 'address' | 'block' | 'token' | 'tx', value: string) => {
     switch (type) {
       case 'address':
         return `https://etherscan.io/address/${value}`;
@@ -178,6 +187,8 @@ const UniswapPositionInfo: React.FC = () => {
         return `https://etherscan.io/block/${value}`;
       case 'token':
         return `https://app.uniswap.org/#/nfts/asset/${UNISWAP_V3_POSITIONS_ADDRESS}/${value}`;
+      case 'tx':
+        return `https://etherscan.io/tx/${value}`;
       default:
         return '';
     }
@@ -210,7 +221,7 @@ const UniswapPositionInfo: React.FC = () => {
 
       {error && <ErrorMessage>{error}</ErrorMessage>}
 
-      {(positionInfo || owner || mintBlock) && (
+      {(positionInfo || owner || mintBlock || mintTxHash) && (
         <ResultCard>
           {owner && (
             <InfoRow>
@@ -225,6 +236,14 @@ const UniswapPositionInfo: React.FC = () => {
               <Label>Mint Block:</Label>
               <ExternalLink href={getEtherscanLink('block', mintBlock.toString())} target="_blank" rel="noopener noreferrer">
                 <LinkValue>{mintBlock}</LinkValue>
+              </ExternalLink>
+            </InfoRow>
+          )}
+          {mintTxHash && (
+            <InfoRow>
+              <Label>Mint Transaction:</Label>
+              <ExternalLink href={getEtherscanLink('tx', mintTxHash)} target="_blank" rel="noopener noreferrer">
+                <LinkValue>{mintTxHash.slice(0, 10)}...{mintTxHash.slice(-8)}</LinkValue>
               </ExternalLink>
             </InfoRow>
           )}
