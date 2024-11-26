@@ -51,6 +51,8 @@ const ErrorMessage = styled.div`
   margin-top: 12px;
 `;
 
+const API_KEY = "09b7ae5edba23f469a588221393785ad";
+
 const UniswapPositionInfo: React.FC = () => {
   const [positionId, setPositionId] = useState("");
   const [positionInfo, setPositionInfo] = useState<any>(null);
@@ -58,6 +60,37 @@ const UniswapPositionInfo: React.FC = () => {
   const [mintBlock, setMintBlock] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const fetchMintBlock = async (tokenId: string) => {
+    const query = `
+      query ($tokenId: String!) {
+        position(id: $tokenId) {
+          transaction {
+            blockNumber
+          }
+        }
+      }
+    `;
+
+    const response = await fetch(`https://gateway.thegraph.com/api/${API_KEY}/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query,
+        variables: {
+          tokenId: tokenId.toLowerCase(),
+        },
+      }),
+    });
+
+    const data = await response.json();
+    if (data.data?.position?.transaction?.blockNumber) {
+      return parseInt(data.data.position.transaction.blockNumber);
+    }
+    return null;
+  };
 
   const fetchPositionInfo = async () => {
     setError("");
@@ -103,18 +136,12 @@ const UniswapPositionInfo: React.FC = () => {
         console.warn("Failed to fetch owner:", err);
       }
 
-      // Fetch mint block
+      // Fetch mint block using subgraph
       try {
-        const filter = contract.filters.Transfer(
-          ethers.ZeroAddress,  // from address (null for minting)
-          null,               // to address (any)
-          positionId          // token ID
-        );
-        const events = await contract.queryFilter(filter);
-        if (events.length > 0) {
-          const mintEvent = events[0];
-          setMintBlock(mintEvent.blockNumber);
-          console.log("Mint block:", mintEvent.blockNumber);
+        const block = await fetchMintBlock(positionId);
+        if (block) {
+          console.log("Mint block:", block);
+          setMintBlock(block);
         }
       } catch (err) {
         console.warn("Failed to fetch mint block:", err);
