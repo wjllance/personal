@@ -42,6 +42,21 @@ const Value = styled(ResultValue)`
   max-width: 60%;
 `;
 
+const LinkValue = styled(Value)`
+  color: ${theme.primary};
+  text-decoration: underline;
+  cursor: pointer;
+  
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
+const ExternalLink = styled.a`
+  color: inherit;
+  text-decoration: none;
+`;
+
 const ErrorMessage = styled.div`
   color: white;
   padding: 12px 16px;
@@ -155,6 +170,30 @@ const UniswapPositionInfo: React.FC = () => {
     }
   };
 
+  const getEtherscanLink = (type: 'address' | 'block' | 'token', value: string) => {
+    switch (type) {
+      case 'address':
+        return `https://etherscan.io/address/${value}`;
+      case 'block':
+        return `https://etherscan.io/block/${value}`;
+      case 'token':
+        return `https://app.uniswap.org/#/nfts/asset/${UNISWAP_V3_POSITIONS_ADDRESS}/${value}`;
+      default:
+        return '';
+    }
+  };
+
+  const renderValue = (key: string, value: string) => {
+    if (key === 'token0' || key === 'token1' || key === 'operator') {
+      return (
+        <ExternalLink href={getEtherscanLink('address', value)} target="_blank" rel="noopener noreferrer">
+          <LinkValue>{value}</LinkValue>
+        </ExternalLink>
+      );
+    }
+    return <Value>{value}</Value>;
+  };
+
   return (
     <Container>
       <div>
@@ -176,19 +215,31 @@ const UniswapPositionInfo: React.FC = () => {
           {owner && (
             <InfoRow>
               <Label>Owner:</Label>
-              <Value>{owner}</Value>
+              <ExternalLink href={getEtherscanLink('address', owner)} target="_blank" rel="noopener noreferrer">
+                <LinkValue>{owner}</LinkValue>
+              </ExternalLink>
             </InfoRow>
           )}
           {mintBlock && (
             <InfoRow>
               <Label>Mint Block:</Label>
-              <Value>{mintBlock}</Value>
+              <ExternalLink href={getEtherscanLink('block', mintBlock.toString())} target="_blank" rel="noopener noreferrer">
+                <LinkValue>{mintBlock}</LinkValue>
+              </ExternalLink>
+            </InfoRow>
+          )}
+          {positionId && (
+            <InfoRow>
+              <Label>Position on Uniswap:</Label>
+              <ExternalLink href={getEtherscanLink('token', positionId)} target="_blank" rel="noopener noreferrer">
+                <LinkValue>View on Uniswap ↗</LinkValue>
+              </ExternalLink>
             </InfoRow>
           )}
           {positionInfo && Object.entries(positionInfo).map(([key, value]) => (
             <InfoRow key={key}>
               <Label>{key}:</Label>
-              <Value>{value as string}</Value>
+              {renderValue(key, value as string)}
             </InfoRow>
           ))}
         </ResultCard>
