@@ -1,19 +1,36 @@
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
+// Modern Dark Theme Color Palette
+const theme = {
+  background: '#1a1b1e',
+  surface: '#2c2e33',
+  surfaceLight: '#3a3d44',
+  primary: '#6366f1',
+  primaryHover: '#818cf8',
+  text: '#e4e6eb',
+  textSecondary: '#9ca3af',
+  border: '#4b5563',
+  success: '#22c55e',
+  error: '#ef4444',
+  warning: '#f59e0b'
+};
+
 export const DevToolsSection = styled.section`
   min-height: 100vh;
   padding: 100px 20px;
-  background: #f8f9fa;
+  background: ${theme.background};
+  color: ${theme.text};
 `;
 
 export const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  background: ${theme.surface};
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  padding: 24px;
+  border: 1px solid ${theme.border};
 `;
 
 export const Header = styled.div`
@@ -22,11 +39,12 @@ export const Header = styled.div`
   gap: 20px;
   margin-bottom: 30px;
   padding: 0 20px;
+  color: ${theme.text};
 `;
 
 export const BackButton = styled.button`
   padding: 8px 16px;
-  background-color: #3498db;
+  background-color: ${theme.primary};
   color: white;
   border: none;
   border-radius: 4px;
@@ -35,14 +53,14 @@ export const BackButton = styled.button`
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #2980b9;
+    background-color: ${theme.primaryHover};
   }
 `;
 
 export const Title = styled.h1`
   margin: 0;
   font-size: 2rem;
-  color: #2c3e50;
+  color: ${theme.text};
 `;
 
 export const ToolsContainer = styled.div`
@@ -55,7 +73,7 @@ export const TabList = styled.div`
   display: flex;
   flex-direction: column;
   min-width: 200px;
-  background: white;
+  background: ${theme.surface};
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
@@ -65,12 +83,12 @@ export const TabList = styled.div`
   }
 
   &::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: ${theme.surfaceLight};
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #888;
+    background: ${theme.border};
     border-radius: 4px;
   }
 `;
@@ -81,20 +99,20 @@ export const TabButton = styled.button<{ active: boolean }>`
   background: none;
   text-align: left;
   cursor: pointer;
-  color: ${props => props.active ? '#3498db' : '#666'};
-  background-color: ${props => props.active ? '#f8f9fa' : 'transparent'};
-  border-left: 3px solid ${props => props.active ? '#3498db' : 'transparent'};
+  color: ${props => props.active ? theme.primary : theme.textSecondary};
+  background-color: ${props => props.active ? theme.surfaceLight : 'transparent'};
+  border-left: 3px solid ${props => props.active ? theme.primary : 'transparent'};
   transition: all 0.3s ease;
 
   &:hover {
-    background-color: #f8f9fa;
-    color: #3498db;
+    background-color: ${theme.surfaceLight};
+    color: ${theme.primary};
   }
 `;
 
 export const ToolContent = styled.div`
   flex: 1;
-  background: white;
+  background: ${theme.surface};
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -105,12 +123,12 @@ export const ToolContent = styled.div`
   }
 
   &::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: ${theme.surfaceLight};
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #888;
+    background: ${theme.border};
     border-radius: 4px;
   }
 `;
@@ -120,94 +138,134 @@ export const Tool = styled.div`
 `;
 
 export const ToolTitle = styled.h3`
-  color: #2c3e50;
+  color: ${theme.text};
   margin-bottom: 20px;
   font-size: 1.5rem;
 `;
 
 export const Input = styled.input`
   width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-family: 'Courier New', monospace;
+  padding: 12px 16px;
+  background: ${theme.surfaceLight};
+  border: 1px solid ${theme.border};
+  border-radius: 8px;
+  color: ${theme.text};
+  font-size: 1rem;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${theme.primary};
+    box-shadow: 0 0 0 2px ${theme.primary}33;
+  }
+
+  &::placeholder {
+    color: ${theme.textSecondary};
+  }
 `;
 
 export const TextArea = styled.textarea`
   width: 100%;
-  height: 150px;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-family: 'Courier New', monospace;
+  min-height: 120px;
+  padding: 12px 16px;
+  background: ${theme.surfaceLight};
+  border: 1px solid ${theme.border};
+  border-radius: 8px;
+  color: ${theme.text};
+  font-size: 1rem;
   resize: vertical;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${theme.primary};
+    box-shadow: 0 0 0 2px ${theme.primary}33;
+  }
+
+  &::placeholder {
+    color: ${theme.textSecondary};
+  }
 `;
 
 export const Select = styled.select`
   width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-family: inherit;
-  background-color: white;
+  padding: 12px 16px;
+  background: ${theme.surfaceLight};
+  border: 1px solid ${theme.border};
+  border-radius: 8px;
+  color: ${theme.text};
+  font-size: 1rem;
   cursor: pointer;
-  color: #2c3e50;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 12px;
-  padding-right: 40px;
-
-  &:hover {
-    border-color: #3498db;
-  }
+  transition: all 0.2s ease;
 
   &:focus {
     outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    border-color: ${theme.primary};
+    box-shadow: 0 0 0 2px ${theme.primary}33;
   }
 
-  & option {
-    color: #2c3e50;
-    padding: 8px;
+  option {
+    background: ${theme.surface};
+    color: ${theme.text};
   }
 `;
 
 export const Button = styled(motion.button)`
-  background: #3498db;
+  padding: 12px 24px;
+  background-color: ${theme.primary};
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  margin-right: 10px;
-  margin-bottom: 10px;
+  font-size: 1rem;
   font-weight: 500;
+  transition: all 0.2s ease;
+  margin-top: 12px;
+
+  &:hover:not(:disabled) {
+    background-color: ${theme.primaryHover};
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+`;
+
+export const Card = styled.div`
+  background: ${theme.surfaceLight};
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid ${theme.border};
+  color: ${theme.text};
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
 
   &:hover {
-    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
   }
 `;
 
 export const Result = styled.div`
   margin-top: 20px;
   padding: 20px;
-  background: #f8f9fa;
+  background: ${theme.surfaceLight};
   border-radius: 6px;
-  border: 1px solid #e9ecef;
+  border: 1px solid ${theme.border};
 `;
 
 export const ErrorMessage = styled.div`
   padding: 12px;
-  background-color: #fee2e2;
-  color: #dc2626;
+  background-color: ${theme.error};
+  color: white;
   border-radius: 6px;
-  border: 1px solid #fecaca;
+  border: 1px solid ${theme.error};
   margin: 10px 0;
 `;
 
@@ -215,8 +273,8 @@ export const LoadingSpinner = styled.div`
   width: 30px;
   height: 30px;
   margin: 20px auto;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #3498db;
+  border: 3px solid ${theme.surfaceLight};
+  border-top: 3px solid ${theme.primary};
   border-radius: 50%;
   animation: spin 1s linear infinite;
 
@@ -230,6 +288,10 @@ export const ResultTable = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+  background: ${theme.surfaceLight};
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid ${theme.border};
 `;
 
 export const ResultRow = styled.div`
@@ -237,7 +299,7 @@ export const ResultRow = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid ${theme.border};
 
   &:last-child {
     border-bottom: none;
@@ -246,20 +308,12 @@ export const ResultRow = styled.div`
 
 export const ResultLabel = styled.span`
   font-weight: 500;
-  color: #4a5568;
+  color: ${theme.textSecondary};
 `;
 
 export const ResultValue = styled.span`
-  color: #2d3748;
+  color: ${theme.text};
   word-break: break-all;
   text-align: right;
   max-width: 70%;
-`;
-
-export const Card = styled.div`
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 15px;
-  margin-bottom: 20px;
 `;

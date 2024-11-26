@@ -3,45 +3,52 @@ import styled from "styled-components";
 import { ethers } from "ethers";
 import { UNISWAP_V3_POSITIONS_ABI } from "@/constants/abis";
 import { UNISWAP_V3_POSITIONS_ADDRESS } from "@/constants/addresses";
-import { Input, Button, Card } from "@/components/DevTools/styles";
+import { Input, Button, Card, ResultRow, ResultLabel, ResultValue } from "@/components/DevTools/styles";
+
+// Theme colors from styles.tsx
+const theme = {
+  surface: '#2c2e33',
+  surfaceLight: '#3a3d44',
+  primary: '#6366f1',
+  text: '#e4e6eb',
+  textSecondary: '#9ca3af',
+  border: '#4b5563',
+  error: '#ef4444',
+};
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 100%;
 `;
 
 const ResultCard = styled(Card)`
-  padding: 20px;
-`;
-
-const InfoRow = styled.div`
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-
-  &:last-child {
-    border-bottom: none;
-  }
+  flex-direction: column;
+  gap: 12px;
 `;
 
-const Label = styled.span`
-  color: #64ffda;
+const InfoRow = styled(ResultRow)`
+  padding: 12px 0;
 `;
 
-const Value = styled.span`
-  color: #fff;
-  word-break: break-all;
+const Label = styled(ResultLabel)`
+  font-weight: 500;
+`;
+
+const Value = styled(ResultValue)`
+  text-align: right;
+  max-width: 60%;
 `;
 
 const ErrorMessage = styled.div`
-  color: #ff6b6b;
-  padding: 10px;
-  background: rgba(255, 107, 107, 0.1);
-  border-radius: 4px;
-  margin-top: 10px;
+  color: white;
+  padding: 12px 16px;
+  background: ${theme.error}22;
+  border: 1px solid ${theme.error};
+  border-radius: 8px;
+  margin-top: 12px;
 `;
 
 const UniswapPositionInfo: React.FC = () => {
