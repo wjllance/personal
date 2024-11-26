@@ -255,3 +255,11 @@ export const ResultValue = styled.span`
   text-align: right;
   max-width: 70%;
 `;
+
+export const Card = styled.div`
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  margin-bottom: 20px;
+`;

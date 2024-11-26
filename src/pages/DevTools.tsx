@@ -32,6 +32,9 @@ const EthAddressValidator = React.lazy(
 const TokenDecoder = React.lazy(
   () => import("../components/DevTools/tools/TokenDecoder")
 );
+const UniswapPositionInfo = React.lazy(
+  () => import("../components/DevTools/tools/UniswapPositionInfo")
+);
 
 type Tool =
   | "json"
@@ -39,7 +42,8 @@ type Tool =
   | "uniswap"
   | "pool-info"
   | "eth-address"
-  | "token";
+  | "token"
+  | "position-info";
 
 interface ToolDefinition {
   id: Tool;
@@ -84,6 +88,12 @@ const tools: ToolDefinition[] = [
     name: "Token Decoder",
     component: TokenDecoder,
     description: "Decode token data and metadata",
+  },
+  {
+    id: "position-info",
+    name: "Position Info",
+    component: UniswapPositionInfo,
+    description: "View Uniswap V3 Position details",
   },
 ];
 
