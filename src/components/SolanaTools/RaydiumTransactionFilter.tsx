@@ -27,12 +27,14 @@ import {
   parseTokenTransfers,
   formatAddress,
   fetchRaydiumTransactions,
+  fetchRaydiumTransactionsRange,
   RaydiumTransactionData,
   TokenTransfer,
 } from "./utils";
 
 const RaydiumTransactionFilter: React.FC = () => {
   const [blockNumber, setBlockNumber] = useState("");
+  const [endBlockNumber, setEndBlockNumber] = useState("");
   const [transactions, setTransactions] = useState<RaydiumTransactionData[]>(
     []
   );
@@ -45,7 +47,23 @@ const RaydiumTransactionFilter: React.FC = () => {
     setTransactions([]);
 
     try {
-      const result = await fetchRaydiumTransactions(blockNumber);
+      let result;
+      if (endBlockNumber) {
+        const startBlock = parseInt(blockNumber);
+        const endBlock = parseInt(endBlockNumber);
+
+        if (endBlock < startBlock) {
+          throw new Error("End block must be greater than or equal to start block");
+        }
+
+        if (endBlock - startBlock > 10) {
+          throw new Error("Maximum block range is 10 blocks");
+        }
+
+        result = await fetchRaydiumTransactionsRange(startBlock, endBlock);
+      } else {
+        result = await fetchRaydiumTransactions(blockNumber);
+      }
 
       if (!result.success) {
         throw new Error(result.error || "Failed to fetch transactions");
@@ -53,7 +71,7 @@ const RaydiumTransactionFilter: React.FC = () => {
 
       setTransactions(result.data);
       if (result.data.length === 0) {
-        setError("No Raydium transactions found in this block");
+        setError("No Raydium transactions found in this block range");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -182,22 +200,52 @@ const RaydiumTransactionFilter: React.FC = () => {
       >
         Block Number
       </Label>
-      <Input
-        type="number"
-        placeholder="Enter block number"
-        value={blockNumber}
-        onChange={(e) => setBlockNumber(e.target.value)}
-        style={{
-          background: "#F9FAFB",
-          border: "1px solid #E5E7EB",
-          borderRadius: "8px",
-          color: "#111827",
-          padding: "10px",
-          marginBottom: "16px",
-          width: "100%",
-          fontSize: "14px",
-        }}
-      />
+      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+        <Input
+          type="number"
+          value={blockNumber}
+          onChange={(e) => setBlockNumber(e.target.value)}
+          placeholder="Enter block number"
+          style={{
+            width: endBlockNumber ? "120px" : "100%",
+            padding: "10px",
+            border: "1px solid #D1D5DB",
+            borderRadius: "6px",
+            fontSize: "14px",
+          }}
+        />
+        {endBlockNumber && <span>to</span>}
+        <Input
+          type="number"
+          value={endBlockNumber}
+          onChange={(e) => setEndBlockNumber(e.target.value)}
+          placeholder="End block (optional)"
+          style={{
+            width: "120px",
+            padding: "10px",
+            border: "1px solid #D1D5DB",
+            borderRadius: "6px",
+            fontSize: "14px",
+            display: endBlockNumber ? "block" : "none",
+          }}
+        />
+        <Button
+          as={motion.button}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setEndBlockNumber(endBlockNumber ? "" : blockNumber)}
+          style={{
+            background: "transparent",
+            border: "1px solid #D1D5DB",
+            borderRadius: "6px",
+            padding: "10px",
+            fontSize: "12px",
+            color: "#374151",
+          }}
+        >
+          {endBlockNumber ? "Single Block" : "Block Range"}
+        </Button>
+      </div>
 
       <Button
         as={motion.button}
@@ -261,6 +309,7 @@ const RaydiumTransactionFilter: React.FC = () => {
               fontSize: "13px",
             }}
           >
+            <span>length: {transactions.length} </span>
             {new Date(
               (transactions?.[0]?.transaction?.blockTime || 0) * 1000
             ).toLocaleString()}

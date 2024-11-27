@@ -1,24 +1,20 @@
-import {
-  Connection,
-  Message,
-  VersionedTransactionResponse,
-} from "@solana/web3.js";
+const { Connection } = require("@solana/web3.js");
 
-export const getConnection = () => {
+const getConnection = () => {
   return new Connection(
     "https://rpc.shyft.to?api_key=BzmzT6WLtxVaRDLq",
     "confirmed"
   );
 };
 
-export const RAYDIUM_PROGRAM_IDS = [
+const RAYDIUM_PROGRAM_IDS = [
   "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8", // Raydium Liquidity Pool v4
   "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1", // Raydium Liquidity Pool v3
   "9HzJyW1qZsEiSfMUf6L2jo3CcTKAyBmSyKdwQeYisHrC", // Raydium AMM
 ];
 
 // Common token addresses
-export const TOKEN_ADDRESSES: { [key: string]: string } = {
+const TOKEN_ADDRESSES = {
   EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v: "USDC",
   Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB: "USDT",
   So11111111111111111111111111111111111111112: "SOL",
@@ -29,25 +25,7 @@ export const TOKEN_ADDRESSES: { [key: string]: string } = {
   "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R": "RAY",
 };
 
-export interface TokenTransfer {
-  from: string;
-  to: string;
-  amount: number;
-  token: string;
-  mint: string;
-  type: "in" | "out";
-}
-
-interface TokenBalance {
-  accountIndex: number;
-  mint: string;
-  amount: number;
-  address: string;
-}
-
-export const parseTokenTransfers = (
-  transaction: VersionedTransactionResponse
-): TokenTransfer[] => {
+const parseTokenTransfers = (transaction) => {
   // check if transaction error
   if (transaction.meta?.err) {
     console.log("Transaction error:", transaction.meta.err);
@@ -55,21 +33,21 @@ export const parseTokenTransfers = (
   }
 
   console.log("parseTokenTransfers:", transaction);
-  const transfers: TokenTransfer[] = [];
+  const transfers = [];
   const message = transaction.transaction.message;
   const postTokenBalances = transaction.meta?.postTokenBalances || [];
   const preTokenBalances = transaction.meta?.preTokenBalances || [];
 
   // Get the transaction initiator (first signer)
-  const initiator = message.staticAccountKeys[0]!.toString();
+  const initiator = message.staticAccountKeys[0].toString();
 
   console.log("Transaction initiator:", initiator);
   console.log("Pre balances:", preTokenBalances);
   console.log("Post balances:", postTokenBalances);
 
   // Create maps of pre and post balances by account and mint
-  const preBalanceMap = new Map<string, (typeof preTokenBalances)[0]>();
-  const postBalanceMap = new Map<string, (typeof postTokenBalances)[0]>();
+  const preBalanceMap = new Map();
+  const postBalanceMap = new Map();
 
   preTokenBalances.forEach((balance) => {
     const key = `${balance.accountIndex}-${balance.mint}`;
@@ -82,7 +60,7 @@ export const parseTokenTransfers = (
   });
 
   // Process all accounts that appear in either pre or post balances
-  const processedAccounts = new Set<string>();
+  const processedAccounts = new Set();
 
   // Process pre balances first
   preTokenBalances.forEach((pre) => {
@@ -98,7 +76,7 @@ export const parseTokenTransfers = (
     }
 
     // Filter out dust
-    const address = pre.owner!;
+    const address = pre.owner;
 
     const tokenSymbol =
       TOKEN_ADDRESSES[pre.mint] || pre.mint.slice(0, 8) + "...";
@@ -127,7 +105,7 @@ export const parseTokenTransfers = (
     if (!processedAccounts.has(key)) {
       const amount = post.uiTokenAmount.uiAmount || 0;
       if (amount > 0) {
-        const address = post.owner!;
+        const address = post.owner;
         const tokenSymbol =
           TOKEN_ADDRESSES[post.mint] || post.mint.slice(0, 8) + "...";
 
@@ -153,12 +131,7 @@ export const parseTokenTransfers = (
   return transfers;
 };
 
-export interface RaydiumTransactionData {
-  transaction: VersionedTransactionResponse;
-  transfers: TokenTransfer[];
-}
-
-export async function fetchRaydiumTransactions(blockNumber: string | number) {
+async function fetchRaydiumTransactions(blockNumber) {
   try {
     const connection = getConnection();
     const block = await connection.getBlock(Number(blockNumber), {
@@ -186,15 +159,14 @@ export async function fetchRaydiumTransactions(blockNumber: string | number) {
           ...tx,
           slot: block.parentSlot,
           blockTime: block.blockTime,
-        } as VersionedTransactionResponse;
+        };
       });
 
     // Parse token transfers for each transaction
-    const processedTransactions: RaydiumTransactionData[] =
-      raydiumTransactions.map((tx) => ({
-        transaction: tx,
-        transfers: parseTokenTransfers(tx),
-      }));
+    const processedTransactions = raydiumTransactions.map((tx) => ({
+      transaction: tx,
+      transfers: parseTokenTransfers(tx),
+    }));
 
     return {
       success: true,
@@ -205,13 +177,13 @@ export async function fetchRaydiumTransactions(blockNumber: string | number) {
     console.error("Error fetching Raydium transactions:", error);
     return {
       success: false,
-      data: [] as RaydiumTransactionData[],
+      data: [],
       error: error instanceof Error ? error.message : "An error occurred",
     };
   }
 }
 
-export async function fetchRaydiumTransactionsRange(startBlock: number, endBlock: number) {
+async function fetchRaydiumTransactionsRange(startBlock, endBlock) {
   try {
     const connection = getConnection();
     const promises = [];
@@ -226,7 +198,7 @@ export async function fetchRaydiumTransactionsRange(startBlock: number, endBlock
     if (successfulResults.length === 0) {
       return {
         success: false,
-        data: [] as RaydiumTransactionData[],
+        data: [],
         error: "No successful transactions found in the block range"
       };
     }
@@ -242,13 +214,15 @@ export async function fetchRaydiumTransactionsRange(startBlock: number, endBlock
     console.error("Error fetching Raydium transactions range:", error);
     return {
       success: false,
-      data: [] as RaydiumTransactionData[],
+      data: [],
       error: error instanceof Error ? error.message : "An error occurred"
     };
   }
 }
 
-export const formatAddress = (address: string): string => {
-  return address;
-  //   return `${address.slice(0, 8)}...${address.slice(-8)}`;
-}
+module.exports = {
+  RAYDIUM_PROGRAM_IDS,
+  fetchRaydiumTransactionsRange,
+  parseTokenTransfers,
+  getConnection,
+};
